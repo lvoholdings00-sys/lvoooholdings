@@ -1,578 +1,581 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja-JP">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>LVO Holdings</title>
-  <link rel="icon" type="image/png" href="assets/logo.png">
-  <link rel="preconnect" href="https://fonts.googleapis.com"/>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet"/>
-  <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --red:    #8B0000;
-      --red-hi: #CC2020;
-      --chrome: #C8C8D0;
-      --white:  #F0EEEC;
-      --dim:    #888880;
-      --bg:     #000000;
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      background: var(--bg);
-      color: var(--white);
-      font-family: 'Cormorant Garamond', Georgia, serif;
-      overflow-x: hidden;
-      cursor: default;
-    }
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.03;
-      pointer-events: none;
-      z-index: 9999;
-    }
-    .video-bg {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      overflow: hidden;
-    }
-    .video-bg video {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      opacity: 0.13;
-      filter: saturate(0.4) contrast(1.2);
-    }
-    .video-bg::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 0%, var(--bg) 75%);
-    }
-    .page {
-      position: relative;
-      z-index: 1;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+<title>SERVICES || LVO ♱⃓ᛪ༙</title>
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+@font-face{font-family:'Baskerville Poster PT';src:local('Baskerville'),local('BaskervilleOldFace'),local('GFS Didot');font-weight:400;}
 
-    /* NAV */
-    nav {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.8rem 4rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(to bottom, rgba(5,5,5,0.95) 0%, transparent 100%);
-    }
-    .nav-mark {
-      font-family: 'Cinzel', serif;
-      font-size: 1rem;
-      font-weight: 600;
-      letter-spacing: 0.35em;
-      color: var(--chrome);
-      text-decoration: none;
-    }
-    .nav-links { display: flex; gap: 3rem; list-style: none; }
-    .nav-links a {
-      font-family: 'Cinzel', serif;
-      font-size: 0.62rem;
-      letter-spacing: 0.25em;
-      color: var(--dim);
-      text-decoration: none;
-      text-transform: uppercase;
-      transition: color 0.3s;
-    }
-    .nav-links a:hover { color: var(--white); }
+:root{
+  --white:#fff;
+  --black:#000;
+  --dim:rgba(255,255,255,0.5);
+  --dimmer:rgba(255,255,255,0.25);
+}
 
-    /* HERO */
-    .hero {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 7rem 1.5rem 4rem;
-      position: relative;
-    }
-    .hero::before {
-      content: '';
-      position: absolute;
-      top: 50%; left: 50%;
-      transform: translate(-50%, -55%);
-      width: min(520px, 90vw);
-      height: min(520px, 90vw);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(139,0,0,0.18) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .hero-logo {
-      width: clamp(160px, 48vw, 360px);
-      height: auto;
-      margin-bottom: 2.8rem;
-      opacity: 0;
-      animation: fadeUp 1.4s cubic-bezier(0.16,1,0.3,1) 0.3s forwards;
-      filter: drop-shadow(0 0 40px rgba(139,0,0,0.35)) drop-shadow(0 0 80px rgba(139,0,0,0.15));
-    }
-    .hero-eyebrow {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(0.5rem, 1.8vw, 0.6rem);
-      letter-spacing: 0.4em;
-      color: var(--red-hi);
-      text-transform: uppercase;
-      margin-bottom: 1.2rem;
-      opacity: 0;
-      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 0.8s forwards;
-    }
-    .hero-title {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2.4rem, 10vw, 5.5rem);
-      font-weight: 900;
-      letter-spacing: 0.22em;
-      color: var(--white);
-      line-height: 1;
-      margin-bottom: 0.6rem;
-      opacity: 0;
-      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1s forwards;
-    }
-    .hero-subtitle {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(0.48rem, 2vw, 0.72rem);
-      letter-spacing: 0.35em;
-      color: var(--dim);
-      text-transform: uppercase;
-      margin-bottom: 3.5rem;
-      opacity: 0;
-      animation: fadeUp 1s cubic-bezier(0.16,1,0.3,1) 1.2s forwards;
-    }
-    .hero-rule {
-      width: 1px;
-      height: 60px;
-      background: linear-gradient(to bottom, transparent, var(--red-hi), transparent);
-      margin: 0 auto;
-      opacity: 0;
-      animation: fadeIn 1s ease 1.8s forwards;
-    }
+html,body{
+  width:100%;height:100%;
+  background:#000;
+  overflow:hidden;
+  font-family:'Baskerville Poster PT','Times New Roman',Georgia,serif;
+  cursor:none;
+  user-select:none;
+}
 
-    /* DIVIDER */
-    .section-divider {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-      padding: 0 2rem;
-      margin: 5rem auto;
-      max-width: 900px;
-      width: 100%;
-    }
-    .section-divider::before,
-    .section-divider::after {
-      content: '';
-      flex: 1;
-      height: 0.5px;
-      background: linear-gradient(to right, transparent, var(--red) 40%, transparent);
-    }
-    .section-divider span {
-      font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.4em;
-      color: var(--red-hi);
-      white-space: nowrap;
-    }
+/* STAGE - WebGL canvas */
+#stage{
+  position:fixed;inset:0;z-index:0;
+  background:#040006;
+}
+#stage canvas{
+  width:100%!important;
+  height:100%!important;
+}
 
-    /* PILLARS */
-    .pillars {
-      padding: 0 2rem 6rem;
-      max-width: 1100px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .pillars-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      border: 0.5px solid rgba(139,0,0,0.2);
-    }
-    .pillar {
-      padding: 3rem 2rem 2.5rem;
-      border-right: 0.5px solid rgba(139,0,0,0.15);
-      position: relative;
-      overflow: hidden;
-      transition: background 0.4s;
-      display: flex;
-      flex-direction: column;
-    }
-    .pillar:last-child { border-right: none; }
-    .pillar::before {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0;
-      height: 1px;
-      background: linear-gradient(to right, transparent, var(--red), transparent);
-      transform: scaleX(0);
-      transition: transform 0.5s cubic-bezier(0.16,1,0.3,1);
-    }
-    .pillar:hover { background: rgba(139,0,0,0.04); }
-    .pillar:hover::before { transform: scaleX(1); }
-    .pillar-num {
-      font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.35em;
-      color: var(--red-hi);
-      margin-bottom: 1.5rem;
-      display: block;
-    }
-    .pillar-title {
-      font-family: 'Cinzel', serif;
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.18em;
-      color: var(--chrome);
-      margin-bottom: 1rem;
-      text-transform: uppercase;
-    }
-    .pillar-text {
-      font-size: 0.92rem;
-      font-weight: 300;
-      line-height: 1.9;
-      color: var(--dim);
-      font-style: italic;
-      flex: 1;
-      margin-bottom: 2rem;
-    }
+/* TITLE */
+#title{
+  position:fixed;
+  top:0;left:0;right:0;
+  z-index:30;
+  padding:28px 40px;
+}
+#title a{
+  text-decoration:none;
+  color:var(--white);
+  font-family:'Baskerville Poster PT','Times New Roman',serif;
+  font-size:13px;
+  letter-spacing:0.3em;
+  display:inline-flex;align-items:center;gap:0;
+  position:relative;
+}
+#title-indicator{
+  display:inline-block;
+  width:60px;height:1px;
+  background:var(--white);
+  margin-left:12px;
+  transform-origin:left center;
+  transform:scaleX(0.75);
+  transition:transform 0.4s;
+}
+#title a:hover #title-indicator{transform:scaleX(1);}
 
-    /* PILLAR BUTTON */
-    .pillar-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.6rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.52rem;
-      letter-spacing: 0.28em;
-      color: var(--dim);
-      text-decoration: none;
-      text-transform: uppercase;
-      border: 0.5px solid rgba(139,0,0,0.3);
-      padding: 0.75rem 1.2rem;
-      position: relative;
-      overflow: hidden;
-      transition: color 0.35s, border-color 0.35s;
-      align-self: flex-start;
-    }
-    .pillar-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(139,0,0,0.07);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .pillar-btn:hover { color: var(--white); border-color: var(--red-hi); }
-    .pillar-btn:hover::before { transform: scaleX(1); }
-    .pillar-btn span { position: relative; z-index: 1; }
-    .pillar-btn-arrow {
-      position: relative;
-      z-index: 1;
-      color: var(--red-hi);
-      transition: transform 0.3s;
-      font-size: 0.6rem;
-    }
-    .pillar-btn:hover .pillar-btn-arrow { transform: translateX(3px); }
+/* STAGE NAV - horizontal sliding nav */
+#stage-nav{
+  position:fixed;
+  top:50%;left:0;right:0;
+  z-index:30;
+  transform:translateY(-50%);
+  overflow:hidden;
+  pointer-events:none;
+}
+#screen-page-nav{
+  display:flex;
+  list-style:none;
+  transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);
+  will-change:transform;
+}
+#screen-page-nav li{
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:all;
+}
+#screen-page-nav li a{
+  text-decoration:none;
+  color:var(--white);
+  font-family:'Baskerville Poster PT','Times New Roman',serif;
+  font-size:clamp(32px,5vw,68px);
+  letter-spacing:0.02em;
+  line-height:1;
+  display:block;
+  padding:0 20px;
+  transition:opacity 0.4s;
+  white-space:nowrap;
+}
+#screen-page-nav li.watashi{
+  display:flex;align-items:center;justify-content:center;
+}
+#screen-page-nav li.watashi img{
+  height:clamp(140px,22vw,320px);
+  width:auto;
+  object-fit:contain;
+  opacity:0.85;
+}
 
-    /* STATEMENT */
-    .statement {
-      padding: 6rem 2rem;
-      text-align: center;
-      max-width: 800px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .statement-quote {
-      font-size: clamp(1.2rem, 4.5vw, 2.2rem);
-      font-weight: 300;
-      font-style: italic;
-      line-height: 1.8;
-      color: var(--white);
-      opacity: 0.85;
-      letter-spacing: 0.04em;
-    }
-    .statement-quote em { color: var(--chrome); font-style: normal; }
-    .statement-attr {
-      margin-top: 2.5rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.4em;
-      color: var(--red-hi);
-    }
+/* current/active state */
+#screen-page-nav li a{opacity:0.3;}
+#screen-page-nav li.is-current a{opacity:1;}
+#screen-page-nav li:not(.watashi):hover a{opacity:0.7;}
 
-    /* CONTACT */
-    .contact {
-      padding: 2rem 2rem 7rem;
-      text-align: center;
-      max-width: 560px;
-      margin: 0 auto;
-      width: 100%;
-    }
-    .contact-label {
-      font-family: 'Cinzel', serif;
-      font-size: 0.55rem;
-      letter-spacing: 0.45em;
-      color: var(--dim);
-      text-transform: uppercase;
-      margin-bottom: 2rem;
-      display: block;
-    }
-    .contact-email {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(0.65rem, 2.5vw, 0.92rem);
-      letter-spacing: 0.15em;
-      color: var(--chrome);
-      text-decoration: none;
-      border-bottom: 0.5px solid rgba(139,0,0,0.4);
-      padding-bottom: 0.4rem;
-      transition: color 0.3s, border-color 0.3s;
-      display: inline-block;
-      word-break: break-all;
-    }
-    .contact-email:hover { color: var(--white); border-color: var(--red-hi); }
-    .contact-note {
-      margin-top: 1.8rem;
-      font-size: 0.88rem;
-      font-style: italic;
-      color: var(--dim);
-      opacity: 0.55;
-      letter-spacing: 0.05em;
-    }
-    .contact-divider-line {
-      width: 1px;
-      height: 40px;
-      background: linear-gradient(to bottom, transparent, rgba(139,0,0,0.4), transparent);
-      margin: 2.5rem auto;
-    }
-    .connect-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.75rem;
-      font-family: 'Cinzel', serif;
-      font-size: 0.6rem;
-      letter-spacing: 0.35em;
-      color: var(--dim);
-      text-decoration: none;
-      text-transform: uppercase;
-      border: 0.5px solid rgba(139,0,0,0.35);
-      padding: 1rem 2.2rem;
-      position: relative;
-      overflow: hidden;
-      transition: color 0.4s, border-color 0.4s;
-    }
-    .connect-btn::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: rgba(139,0,0,0.06);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
-    }
-    .connect-btn:hover { color: var(--white); border-color: var(--red-hi); }
-    .connect-btn:hover::before { transform: scaleX(1); }
-    .connect-btn span { position: relative; z-index: 1; }
-    .connect-arrow {
-      position: relative; z-index: 1;
-      font-size: 0.7rem;
-      color: var(--red-hi);
-      transition: transform 0.3s;
-    }
-    .connect-btn:hover .connect-arrow { transform: translateX(4px); }
+/* progress indicator - thin line that grows across top */
+#progress-indicator{
+  position:fixed;
+  top:0;left:0;
+  z-index:40;
+  height:1px;
+  background:var(--white);
+  width:100%;
+  transform-origin:left center;
+  transform:scaleX(0);
+  transition:transform linear;
+}
 
-    /* FOOTER */
-    footer {
-      border-top: 0.5px solid rgba(139,0,0,0.2);
-      padding: 2.5rem 2rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 0.8rem;
-    }
-    .footer-mark {
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.3em;
-      color: var(--dim);
-    }
-    .footer-center {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .footer-privacy {
-      font-family: 'Cinzel', serif;
-      font-size: 0.5rem;
-      letter-spacing: 0.2em;
-      color: rgba(136,136,128,0.5);
-      text-decoration: none;
-      text-transform: uppercase;
-      border-bottom: 0.5px solid rgba(139,0,0,0.25);
-      padding-bottom: 0.15rem;
-      transition: color 0.3s, border-color 0.3s;
-    }
-    .footer-privacy:hover { color: var(--red-hi); border-color: var(--red-hi); }
-    .footer-copy {
-      font-family: 'Cinzel', serif;
-      font-size: 0.5rem;
-      letter-spacing: 0.15em;
-      color: rgba(136,136,128,0.4);
-    }
+/* timer dots / indicator */
+#timer-indicator{
+  position:fixed;
+  bottom:56px;left:0;right:0;
+  z-index:30;
+  display:flex;align-items:center;justify-content:center;
+  gap:0;
+}
 
-    /* ANIMATIONS */
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
-    }
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
-    }
-    .reveal.visible { opacity: 1; transform: translateY(0); }
+/* CONTROLLER - bottom scrubber */
+#screen-controller{
+  position:fixed;
+  bottom:0;left:50%;
+  z-index:30;
+  transform:translateX(-50%);
+  padding-bottom:20px;
+  pointer-events:all;
+}
+#screen-controller .inner{
+  position:relative;
+  display:flex;align-items:flex-end;
+}
+#knob{
+  position:absolute;
+  bottom:0;left:0;
+  display:flex;align-items:flex-end;
+  gap:0;
+  transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);
+  pointer-events:none;
+  z-index:2;
+}
+.separator{
+  display:block;
+  width:1px;height:16px;
+  background:var(--white);
+  position:relative;
+  bottom:-1px;
+}
+#nav-indicator{
+  display:none;
+}
+.denominator{
+  font-family:'Baskerville Poster PT','Times New Roman',serif;
+  font-size:11px;
+  font-weight:400;
+  color:var(--dimmer);
+  letter-spacing:0.1em;
+  padding-left:6px;
+  line-height:1;
+  bottom:3px;
+  position:relative;
+}
 
-    /* PORTRAIT MOBILE */
-    @media (max-width: 600px) {
-      nav { padding: 1.2rem 1.2rem; }
-      .nav-links { display: none; }
-      .hero { padding: 6rem 1.2rem 3rem; }
-      .hero-logo { width: clamp(150px, 60vw, 240px); margin-bottom: 2rem; }
-      .section-divider { padding: 0 1.2rem; margin: 3.5rem auto; }
-      .pillars { padding: 0 1.2rem 5rem; }
-      .pillars-grid { grid-template-columns: 1fr; }
-      .pillar { border-right: none; border-bottom: 0.5px solid rgba(139,0,0,0.15); padding: 2.2rem 1.5rem 2rem; }
-      .pillar:last-child { border-bottom: none; }
-      .pillar-btn { font-size: 0.5rem; padding: 0.65rem 1rem; }
-      .statement { padding: 4rem 1.2rem; }
-      .contact { padding: 1.5rem 1.2rem 5rem; }
-      footer { flex-direction: column; align-items: center; text-align: center; padding: 2rem 1.2rem; }
-      .footer-center { flex-direction: column; gap: 0.6rem; }
-    }
-    @media (min-width: 601px) and (max-width: 900px) {
-      nav { padding: 1.5rem 2rem; }
-      .pillars-grid { grid-template-columns: 1fr; }
-      .pillar { border-right: none; border-bottom: 0.5px solid rgba(139,0,0,0.15); }
-      .pillar:last-child { border-bottom: none; }
-    }
-  </style>
+#controller-parent{
+  list-style:none;
+  display:flex;
+  align-items:flex-end;
+  border-bottom:0.5px solid rgba(255,255,255,0.2);
+  padding-bottom:0;
+}
+#controller-parent li{
+  cursor:pointer;
+  position:relative;
+}
+.numerator{
+  display:block;
+  font-family:'Baskerville Poster PT','Times New Roman',serif;
+  font-size:11px;
+  letter-spacing:0.1em;
+  color:var(--dimmer);
+  padding:0 8px 8px;
+  transition:color 0.3s;
+  line-height:1;
+}
+#controller-parent li.is-current .numerator{
+  color:var(--white);
+}
+.watashi .numerator{
+  font-family:'Yu Mincho','游明朝','Hiragino Mincho ProN',serif;
+}
+
+/* CURSOR */
+#waiting-cover-cursor{
+  position:fixed;
+  pointer-events:none;
+  z-index:900;
+  width:52px;height:52px;
+  margin-left:-26px;margin-top:-26px;
+}
+#waiting-cover-cursor .inner{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+}
+#waiting-cover-cursor img{
+  width:26px;height:26px;
+  animation:spin 1.8s linear infinite;
+}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}</style>
 </head>
 <body>
-  <div class="video-bg">
-    <video autoplay muted loop playsinline>
-      <source src="assets/0415.mp4" type="video/mp4"/>
-    </video>
+
+<!-- WebGL Stage -->
+<div id="stage"><canvas></canvas></div>
+
+<!-- Title / Logo -->
+<div id="title">
+  <a href="https://wearelvo.com/" id="title-link">
+    <span id="title-text" style="letter-spacing:0.3em;">Legion V. Omni-Operations/span>
+    <span id="title-indicator"></span>
+  </a>
+</div>
+
+<!-- Progress bar -->
+<span id="progress-indicator"></span>
+<span id="timer-indicator"></span>
+
+<!-- Stage nav (horizontal) -->
+<div id="stage-nav">
+  <ul id="screen-page-nav">
+    <li data-idx="0"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+    <li data-idx="1"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+    <li class="is-prev" data-idx="2"><a href="https://ops.wearelvo.com/">Operations</a></li>
+    <li class="is-current" data-idx="3"><a href="https://contact.wearelvo.com/">Connect</a></li>
+    <li class="watashi is-next" data-idx="4">
+      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAFSAF8DASIAAhEBAxEB/8QAHQABAAICAwEBAAAAAAAAAAAAAAcIBQYDBAkCAf/EAEMQAAEDBAECBAQCBwUECwAAAAECAwQABQYRBxIhCBMxYRQiQVEycQkVFiNCcoEzUmKCsTdDkaIXJDRjdXahs7TR0//EABQBAQAAAAAAAAAAAAAAAAAAAAD/xAAUEQEAAAAAAAAAAAAAAAAAAAAA/9oADAMBAAIRAxEAPwCndtgT7nMRDtsKTNkr/AzHaU4tX5JSCTU4cZeFTlLLnWn7vBRittV3U/ch++1/hYHz79l9A96izHeQM3xy2G249lV3s8U72iDKUwTs77lBB9T96tx+jpv99v7+fP329XK6uo/V3SubKW8pO/it6KydboMu1jfhf4Zxa545kl0tV6uMpos3H4jUuasj/dpQ2CWNKGwPlIIBKiQCKX8mxcQiZrcGsEucq5Y8VBcN2SyptxII2UEHRPSdjq0N63WzciYvf8x8SOZ4/jNseuVzk5LcQ0w1odhJcJJUSEpSPqokAfU1oV/s90sF4k2e9QJFvuEVZbfjvoKVoV7g/wCv1Hegt74YPD7x1yNwZAv2S2+WLpIlSEiZEmLbWG0uFKQUnaNgg9+n61XDnXGsKxLPpNjwXJJd/gR0lD70hkJLLwUoKaCgAHNaHzBIHfQ3qr28FzG+P/B1aL1JHQmBYpFzAV36itTj6R699lY0PcelebUh52Q+4++tTjriita1HZUonZJoOOlKUClK2Lje4X+15lb5uL2pu63ZCz8PEXbkzfMOu4DRSrZ1vuBseoIoM9x9w7nuaxTcrfaBAsqR1O3e6OCLCbT/AHvMX+IfyhVbDmeMcUYvx7ebfZs1by3MAuOVvsRiiGw35nzpYWr+0V3TtYOtb1rvUqcj4zdM2ag37nfkFXHnmOJ6LE7JTKC0nfzsxkEFgb0D19ZHqpQ1qtI5NGK2PjO9Y1h3Gt8t8Baor6souMpt9U7pdKQApslroO9jylEEp7jsSAji1cjSrfYoNq/ZHCpghoUgSpdjadkOgqJHmOHusgHpBP0Aq+PgvtqxxG3lEyw2S0zr88p3VtgIjBcdslDXWE+p35igfsuvPjjfFLhnGdWfFLYkmTcpKWeoDflo9VuH2SkKUfYV6h4VkGNMZLK4xx1KT+y9sih7oUOlgKBS20dfxBCAo/zD30FOuUOReV+KOVctuVrw212KLOuspLN0NgSkzWS+pSFF/WllXZR77J7nvUNco8k5XyxebdJyNq3P3FlJjsuRIaWXHQojSFEfiAPpv06j96tlwXyjCd5o5M4lzWTEetEm/wBzdtiJ5SWv+1OebHPV2IUD1AH7L+4qFccwjGbl43GMZxBbUrHYt7EtHlL62ktsoD7jYUN7QFpU2O/2oJ78aF1RgfhltODxHEpdnCLakhvt+4YQlSyPb92hP5LqgVWM8f2ZjIuZG8djOBcPHIojnR2DIc0t0/0HlpPug1HnJfGS7Nh1l5Dxl1244fekAIdWQp2BI7hcd7QAJCkqAWAArXoOwIRtSlKBXatVwn2q4sXG1zZMGbHV1syI7pbcbV90qHcH8q6tbHxtiFwzvMIuL2p1hqdKZkOMl5QSgqaYce6So9k78vWz2G9mgyEvMYeTzlSM8tirhLd15l2glLE0nWgpY15b3v1JC1fVYrOqs78PiPI5VizyHdMbW9EL1rUlbUlD5X8q1sKPSggBQK0qWk9Wtn6d1zw28wBxxLWOQH0oGytu+QenX37vAgd/qK5WvDtzKzaLlJ/UTbUZppBeaYujD6n9uJCUBDK1kkE9XzAABBO9gAhleJ8ht/B+Gys0faZlZ7fYpZsMJelC3xVdzLeH0K9DoT6qSN/hUTUqfo5JNwu2UchXq4SHJUh9MRcl91W1uOOLfUSfuTpRqmzi1uK6lrUpWgNqOz27CrofozmCmFnkrqGnHIDYH1HSJB3/AM3/AKUFYOdv9t+ef+ZLj/8AJcqZfBKIOI2vPuX7ugGJj9r+GjpUdea84erpH2UShtG/+9r6wjirF+W/ErypYb/d7lbpMW8zpcX4NTY8xImOJc2FpO9dTeta+v8ASwlw8POBWrhprj+45ZdbXj6boblMl/EMMOSnSnpSla1IKekaToa/gH2oPO6+XOber1OvFxeL02dIckyHD6rcWoqUf+JNWl8AuQ2+9s5RxDkrDU603SMqaxHf7pURpDyB7kFChrRHQT61+5HiPg9wwFEzKb1k0hHbyIM34gr0O/ztIQ2N9v4x7fWsHx5zBxZjnK+OHAOKo1iirntxpF1uNwekSkMuny1qSkrKUHpUfUqHsKCMfEZxdM4o5GkWFalv2yQn4m2SVerjBJACv8aSCk/kD6EVG1X4/SOW22vcT2S7P9CbhFvCWYyj+JSHGllxI9v3aD/lFUHoFbTxXZ4t/wAzatU3IE4/GehTVO3BRPSylER5ZCtdylXT0kDuQogb3WrVkMbstzyO/QrHZoi5dwmuhmOykgdSj9ydAAepJIAAJOgKCWsfxvjHC5Uq/wA/lW05ElqBLZatcC2yfMluOsONJQVLSEoTteyon6fcioVqT8p4auFnscq427NcKySTAZL9wt1nuofkx2091r6dALSgfiKSenufQE1GFAqW/D9zrfeHY14jWmzW65N3RTS1/FKWktqbCgNdJ7g9R2Pb1qJKUG7Y5yfleP8AKUzke1SIzF8myZMh791tlSnyorHQT6bVsDfYgfatWu91ul3lGVdrjLnvkklyS8pxWydnuon610qUClKUGwZdm2XZczCZyfIrld24DflxUynysNDsDrf1Ohs+p0NmtfpSgVsnG90t1rylCrvJkxLdLjSIMqTGR1usNvsraLiU7HVrr2U7HUnqT9a1ulBM8bE8BwJhzLnOUrNkrzbDv6rtdpZd86Q6tBSjz+sDyUDq6lA9yAUjuahilKBSlZy84lklnx+15DcrPJYtF1SVQZugpl7W9gKBICho/KdHse1Bg6UpQKUpQKUpQK2jizC7jyDm0XE7SpCZ0tiSuP19kqW1HcdSgn0HUUBOz2HVutXrIWG83KxynpVrkrjPPRnYq1oOj5biChYB+m0kiglc+FvnYEj9ht+/62hf/tWKzXgfkTBsLn5RmdpRZ4sd1llhHxTL6n1uK1r90tXSAATs+3vqLa7sW63CLaplrYlOIhTegyGN7SsoV1JOvuD9fcig6VXu8H+Hx858Jt1xjKkB62T7nKTCUodRjp6G9OI36KS6HFD3/M1RGrs8pX13iXwSYpisFwxLvkMJDSug6W2l4efJPr6/P5Z/noKVymfJlux0rS75bhQFI7hWjrY/Opv408N1/vrUW4ZtkFqwS2ygFMC5upEt9J9ClhSkkA/4iD6aBqD4z70aQ1JjPOMvtLC23G1FKkKB2FAjuCD33W68fZ01jF7mZfOgLv8AlaSlVskXBwusx3e/VIcBPU64nSegHsD8x3oCguLafBbxlHj6uF8yec8RoqTIZaQD9wkNkj+pNQH4suArNxDDtV2sOQyZsO4Pqj/CTugyEEJ6usKQEhSfoflGiR677QzmGXZPmFzXcsnvs+7SVq31SHioJ9kp9Ej2AArDOuuvKCnXFuEJCQVKJ0B6D8qD4pSlApSpA8PcBdz5Vt0RrFouTvqYlKj2+Xr4dbyY7hbU71EJ8tKwkq2daB9qCP6VYy+cSZFFlXm95JjWI4/YLjalPznPjoxFrlNoUR8Mlt5SwVuIGkJ6klLvSRsDprnQdq0w13C6RIDZ0uS+hlJ+xUoAf61avx5QbjfuZME48scYuKFrbRBYH4Qt99TX9AAyjZ+gHtVW8YlNQsltc186ajzGXVn7JSsE/wClekHNOOwMbyu688TVodk47ijkO2xynfTKK3Slw7Gv970fX8au3YUFJJOFY3dfEN+wtoU63Y4D3wsuQySXH0RGCZbyerYClll5Q18o2NDXrFStdR6QQN9gTs1JvhpyO22XnSx3HJZA/V05x+FOedV26ZLS2upSj6DqcBJ+26zHK/hv5Mwu/S2bfjlxyGzhwmJOtzJkFbe+3WhG1IUB67Gt70SO9BDNK2mPxxyHIdDUfAspecPolFofUT/QIrO3Tgzly148q/TsCvDUBCSpavLSpxCR6lTQJcSB9ykUEc0pSgVnsCi5LNyZqNiKJbl4VHkFpuKCXHG0sLU6gJH4tthY6dHqB1o7rA1unCkXIZnIsSNit6Zsl4VDnGPOdf8AJSyBDeKz5mx5ZKAoBex0kg/Sg6aeO89MeVIXhl/aYiR3JMh163utobaQnqUoqUAAABWr1Z2w2zlS1quNxzTmxD1gYtcwzG2M1VLdXthaUBDaVqJV5ika7f8A0axUCrq3jmrFM68GN3td4v0KJlMe3tQn4LrwS/JdbcR0ONpPdYUEhRKR8p6t61uqVUoFT3xJ4qeRcFtjFmniLk1rYSENInlQfaQPRKXR30P8QVodhoACoEpQXWY8cluU0kv8cSkOfVKLslQH9S0P9KweVeN28yoD8fHMFh259aVJbkzJxk9O/RXlhCBv2JI/Oqi0oFKUoFbNxgzjUjMWWcvuMq22VUSZ8RIi/wBqk/Cu9ASNjqJX0J6SdK3o9jWs1sHHtktOR5bDs98yWLjUB/r8y5SWi42zpBI2kEepAHqPWgkO2zeCsUXJvFqnZjkVxEOQxFgzbfHYjKcdaW31Oq61HoAWToDZOveocrklNoakutNvIfQhZSl1AISsA9lDffR9e9cdApSlApSlApSlApSlApSlApSlApSlApXNCiyp0tqJCjPSZDqultplBWtZ+wSO5NTLinhf5cvkIT5loh45D1svXqUGOkfdSAFLT/VIoIUpVgVeErkaRCckWO/4Vf1N+rVuuqlq39trbSkev1IqGc0xPI8MvjlkyizyrVPbGy0+nXUP7yVDYUn3SSPegwlKUoFKUoFKUoJN4y4VyvkjBrpkWHriT5lsmJjv2suJbfUhSAoOJKiEn+IaJG+k62e1S/xL4Nckuxbn8iXNNhidj8DEUl6UsfZS+6G/+c+wqDOF+UMm4qysX3HXW1odSG5kN7ZZlN7/AAqA7gj1Ch3B+4JBl7nLxZXvO8OGOY3Z38YRJGri+mZ5jjqNd2kKCU9KT9T6kdvQnYbtnPLnE/BDD2L8M45a7nkSUlqVdV7dQ0ofRTv4nVb38qSEA/1TVWc95AzPO7gqblmRT7osq6ktuuaZb/kbGkIH8oFaxSg7dnudxs9xZuVpnyYE1hXU0/HdLbiD9wodxV6OJ5Nu8UPh/m2PNm215NZnCwi5BADiHCjbMgaHbfdK0+iuk+mxqhlXy/RyY7cLdxxf8gltFuNd56EROod1pZSQpY9upZT+aDQUYvVulWi8TbTPb8uXCkOR30f3VoUUqH/EGupW78+yYsvm/NpMIoLC77MKVJ1pX75W1DXrs7O/rutIoFKUoFKUoFKUoFKkPDrfw0LXHlZhkuZqllPU/CtdpYT0n+6l1x0hX32Uj8qknHOXeC8AUmThPD8273Js7an5DNQXEn6KCQFpSf5Ak+9Bj/Dz4asr5DnRrtkUaVYcWCgtb7yOh+WnY+VlJ76I/jI6R9Or0qy3iF5oxThbBU4VhfwisgRF+FgwoygUW5HToOO69FD1CT3Ue57bNVi5H8VHK2XMuw4dwj41BcBBbtSCh0j3dUSsH+UpqDHXFuurddWpbi1FSlKOyon1JP1NAdcW66t11aluLUVKUo7KifUk/U180pQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQKUpQb5wZi+KZpnsbFcqvM6zC5DyLfLjpQtKZRICEuJV6pV6DRB6ikfXY+ubuKcm4nygWe/IQ9HfCnIM5n+yktg62P7qh22k9xseoIJw/FH+1HE/8AxuH/AO+ird/pKLvDbxHErCphC5kie9MQ7/E22230KT+Si6k/5KCj1KUoFKkfhqBxhkMheM54/c7HMmOhNvvsV0KZZWewQ+0oa6N/xAjX10O9fvOfDeWcS3huPekImWuUoiFc44Pkv679J+qF679J/oSO9BG9KUoFKUoFKUoNg41kIici4zKd35bN3iuK166DySf9Ksp+kpLv7a4iCV+V+rnune+nq8wb1766d/0qpra1tuJcbWpC0kFKknRBHoQau/4qMbuXNfB+Eci4bbX7vNYb634sNsrdKHkpDgCE7Kih1sJIGyNqPoDQVS4dwZ3PMtMF6QqFZ4EdyfeJ4GxEiNDqcX3/AIiPlSPuR9N1qEv4cynjEDoj9avKDpBWEb7dRHbevXVWs5Nxb/oJ8JzWPO9CMszWW2m6uJPzNsoHmKZB+yB0oP3Li/oRVTqBV8vC5Pg84eG668d5gVSnrSRCEhXzOIaUkqjOgn+NBCkj2bG97NUasarUi7R1Xtma9bgr/rCIbqW3lJ1/CpSVJB3r1Bq/vguybhqVbrlZeO7VOsl4UlD1wYuTvmPykp2ErSsEhSU9RGgE66vw99kKD5VZZ2N5Nc8fuSOiZbZbkV8D060KKSR9x27H7VjakfxN3K23bnzMZ9pdbeiLuKkpcbV1JWpKQlagfqCpKjsdvtUcUClKUClKUCrE+ETxAt8Yvu4vlfnvYtMd81DraStcB09lKCR3U2rt1AdwRsAkkGu1KC5XjxyvjXNuO8buePZda7reIk5Yjx4clLiww6j96XEDuju21rqAPr76prSlAr9QpSFdSFFJ+4Oq/KUClKUClKUClKUClKUClKUClKUClKUClKUClKUClcrcaQ5Hdktx3VsMlIdcSglKOr8PUfQb0db9dVxUCld2z2m63mWIdntk24yT6MxWFOrP+VIJqWcP8MXMuR9K/wBl/wBTsK1+9ur6WNfmju5/y0EM0q6uE+Ci2RAiZneZuPoR8zsa2tBpGh93nNnX+VJ96zWaeHPw6KtD6ImWR8clISoIkm+NrSlYB/Gl1R2O3cApPb1FBRClfb6EtvuIQ4HEpUQlYGgob9a+KBSlKBSlKCZPCnyBjWHZZcrFnEGPKxTJoyYNxLzfWlnRJQsj6pBJB13Gwod01aPIsX8J/GVoj5HOs9gfak/vIjfxDlyVJ7b+Rta1gp9O5ASNjZG68+KUFuMn8YQgsm0cV8f2+1RyehpyW2NnvodLDOkg/b5levp9+fOOX8+4ztcWXnF/k3jkK5RxIjWZCwxb7IyofIp9prp8549yEL2E+p2QCYx8EWJRco52hSri2hcGwxnLq75n4OpBSlvZ9Bpa0r/yVFnIeSy8xzm9ZROUsv3OY5I0o76Ek/Kj8kp0kewFBz5xnuZZvPXMyrI7jdVqV1BDzx8pHshsaQgeyQK1qlKBSlKBSlKBSlKBSlKCzv6OuZBHKWQWeYEddxsi0t77FfS4jqQD690kn/L7VAvJeIXXA84umLXhhxqRBfUhClJ0HW9/I4n7pUnRB964cBym7YTmNsymyO+XOtz4db3+FY9FIV/hUklJ9ia9ALLceFvE/ikb9awoir2y1pyIp3yrhCV6qCFjRW3vuCNpP1AOwA84qVeO9eCDGnnnFWbOrtCbO+hMqG3IKftspLe/+AqrvPPFV54jzNGPXaZGntyI4kxJTAKQ62VFPdJ7pUCk7Gz+ZoI+pSlApSlApSlApSlArkjPvRn0SI7zjLzaupDjailST9wR3BpSgv8AeCrI8hvmOsKvd9ulzIaOjMluPenVr8RNVt8b8yXK59ubcmU++iOyhthLjhUGkbUelIPoNknQ+5pSgg+lKUClKUClKUH/2Q==" alt="私について">
+    </li>
+  </ul>
+</div>
+
+<!-- Controller -->
+<div id="screen-controller">
+  <div class="inner">
+    <div id="knob">
+      <span class="separator"></span>
+      <span class="denominator">5</span>
+    </div>
+    <ul class="nav-group" id="controller-parent">
+      <li class="nav-list controller-item" data-idx="0"><span class="numerator">1</span></li>
+      <li class="nav-list controller-item" data-idx="1"><span class="numerator">2</span></li>
+      <li class="nav-list controller-item" data-idx="2"><span class="numerator">3</span></li>
+      <li class="nav-list controller-item is-current" data-idx="3"><span class="numerator">4</span></li>
+      <li class="nav-list controller-item watashi" data-idx="4"><span class="numerator">私</span></li>
+    </ul>
   </div>
-  <div class="page">
-    <nav>
-      <a class="nav-mark" href="#">LVO</a>
-      <ul class="nav-links">
-        <li><a href="#pillars">Structure</a></li>
-        <li><a href="#statement">Mission</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
+</div>
 
-    <section class="hero">
-      <img class="hero-logo" src="assets/logo.png" alt="LVO Holdings"/>
-      <p class="hero-eyebrow">Est. 2026 · Houston, Texas</p>
-      <h1 class="hero-title">LVO</h1>
-      <p class="hero-subtitle">Legion V &nbsp;·&nbsp; Omni-Operations</p>
-      <div class="hero-rule"></div>
-    </section>
-
-    <div class="section-divider reveal"><span>The Structure</span></div>
-
-    <section class="pillars" id="pillars">
-      <div class="pillars-grid">
-        <div class="pillar reveal">
-          <span class="pillar-num">01</span>
-          <p class="pillar-title">Vindex</p>
-          <p class="pillar-text">Real estate acquisition and development. Every property held, protected, and positioned for generational return.</p>
-          <a class="pillar-btn" href="https://vindex.wearelvo.com" target="_blank">
-            <span>LVO Vindex</span>
-            <span class="pillar-btn-arrow">→</span>
-          </a>
-        </div>
-        <div class="pillar reveal" style="transition-delay:0.15s">
-          <span class="pillar-num">02</span>
-          <p class="pillar-title">Operations</p>
-          <p class="pillar-text">Social services and community infrastructure. Where capital meets purpose. Where purpose becomes legacy.</p>
-          <a class="pillar-btn" href="https://ops.wearelvo.com" target="_blank">
-            <span>LVO Operations</span>
-            <span class="pillar-btn-arrow">→</span>
-          </a>
-        </div>
-        <div class="pillar reveal" style="transition-delay:0.3s">
-          <span class="pillar-num">03</span>
-          <p class="pillar-title">Alliance</p>
-          <p class="pillar-text">Strategic partnerships and capital ventures. Built on trust, sealed in results. Access is earned, not given.</p>
-          <a class="pillar-btn" href="https://alliance.wearelvo.com" target="_blank">
-            <span>LVO Alliance</span>
-            <span class="pillar-btn-arrow">→</span>
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <div class="section-divider reveal"><span>The Mission</span></div>
-
-    <section class="statement" id="statement">
-      <p class="statement-quote reveal">
-        We do not advertise.<br/>
-        We do not explain.<br/>
-        <em>We build.</em>
-      </p>
-      <p class="statement-attr reveal" style="transition-delay:0.2s">LVO Holdings · Private</p>
-    </section>
-
-    <div class="section-divider reveal" id="contact"><span>Contact</span></div>
-
-    <section class="contact">
-      <span class="contact-label reveal">Private Inquiries</span>
-      <a class="contact-email reveal" href="/cdn-cgi/l/email-protection#4c2f2322382d2f380c3b292d3e29203a23622f2321" style="transition-delay:0.1s"><span class="__cf_email__" data-cfemail="d9bab6b7adb8baad99aebcb8abbcb5afb6f7bab6b4">[email&#160;protected]</span></a>
-      <p class="contact-note reveal" style="transition-delay:0.2s">Private correspondence only.</p>
-      <div class="contact-divider-line reveal" style="transition-delay:0.3s"></div>
-      <a class="connect-btn reveal" href="https://contact.wearelvo.com" target="_blank" style="transition-delay:0.4s">
-        <span>Connect with us</span>
-        <span class="connect-arrow">→</span>
-      </a>
-    </section>
-
-    <footer>
-      <span class="footer-mark">LVO Holdings</span>
-      <div class="footer-center">
-        <a class="footer-privacy" href="https://privacy.wearelvo.com">Privacy Policy</a>
-        <a class="footer-privacy" href="https://tos.wearelvo.com">Terms of Service</a>
-        <span class="footer-copy">&copy; 2026 LVO Family Legacy Trust · All Rights Reserved</span>
-      </div>
-    </footer>
+<!-- Custom cursor -->
+<div id="waiting-cover-cursor" style="opacity:0;left:50%;top:50%;">
+  <div class="inner">
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAaABoDASIAAhEBAxEB/8QAGwAAAQQDAAAAAAAAAAAAAAAABAUGBwgAAgP/xAAsEAACAgECBQIEBwAAAAAAAAABAgMEBQARBhIhQVEHExQxMoFDYWJxoeHx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKz47EYrh3hutxFxDX+Mt3gWx2PJ2UoPxZP0+B3+/RNn40zTsVhNStB2ghrIEA8dQT/Olv16VofUKWguwq06leGqB8hH7Skbfdm0wdA4Y5KWfBgetDTyOxMckQ5UlPgjsfz/AM0gOrI7I4Ksp2IPY62ru8ViOSPcOjBl28g6f09HGyTySOiczMS3TuToD7NMep3C1CxjJI24rxFYVrNR3CtdgX6JE3+bDuP63je9QvULJrXqdirOp2Mc0ZRgf2OuVaeerYSxWmkgmjPMkkbFWU+QR1B1YXiS5buejmKsW7U9iZrUZMkshZifbk7nroIOxlH4XlyORUxQxnmRG6NK3YAeNAz37Us8kpmZS7Ftgeg3Osycsst2QyyPIQxA5mJ2GhdB/9k=" alt="">
   </div>
-  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-    const reveals = document.querySelectorAll('.reveal');
-    const obs = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-      });
-    }, { threshold: 0.12 });
-    reveals.forEach(r => obs.observe(r));
-  </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"57d5cd2fcb53490c8c986ef27590d71d","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────
+const SLIDES = [
+  { label:'Beauty',    url:'/portfolio/beauty',     color:[0.08,0.08,0.15] },
+  { label:'Editorial', url:'/portfolio/fashion',    color:[0.05,0.05,0.10] },
+  { label:'Portrait',  url:'/portfolio/portrait',   color:[0.04,0.06,0.12] },
+  { label:'Exhibition',url:'/portfolio/exhibition', color:[0.04,0.04,0.08] },
+  { label:'私',        url:'/portfolio/biography',  color:[0.06,0.04,0.10] },
+];
+const TOTAL = SLIDES.length;
+
+// ─── THREE.JS SETUP ───────────────────────────────────────────────────────
+const canvas = document.querySelector('#stage canvas');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+
+const scene = new THREE.Scene();
+const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
+
+// Full-screen quad geometry
+const geo = new THREE.PlaneGeometry(2,2);
+
+// Vertex shader
+const vertSrc = `
+varying vec2 vUv;
+void main(){vUv=uv;gl_Position=vec4(position,1.0);}
+`;
+
+// Fragment shader — distortion + color effect
+const fragSrc = `
+precision highp float;
+uniform float uTime;
+uniform float uIndex;   // 0..4
+uniform float uBlend;   // 0..1 transition progress
+uniform float uPrev;    // previous index
+uniform vec2  uRes;
+
+varying vec2 vUv;
+
+#define PI 3.14159265358979
+
+// Palette per slide — dark moody tones
+vec3 palette(float idx){
+  if(idx<0.5) return vec3(0.04,0.06,0.20);
+  if(idx<1.5) return vec3(0.03,0.03,0.14);
+  if(idx<2.5) return vec3(0.03,0.05,0.16);
+  if(idx<3.5) return vec3(0.02,0.02,0.10);
+  return        vec3(0.04,0.02,0.12);
+}
+
+// Cheap noise
+float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+float noise(vec2 p){
+  vec2 i=floor(p), f=fract(p);
+  f=f*f*(3.0-2.0*f);
+  float a=hash(i),b=hash(i+vec2(1,0)),c=hash(i+vec2(0,1)),d=hash(i+vec2(1,1));
+  return mix(mix(a,b,f.x),mix(c,d,f.x),f.y);
+}
+float fbm(vec2 p){
+  float v=0.0,a=0.5;
+  for(int i=0;i<5;i++){v+=a*noise(p);p*=2.0;a*=0.5;}
+  return v;
+}
+
+// Glass / cell distortion
+vec2 cellDistort(vec2 uv,float t,float idx){
+  float scl=4.0+idx*1.5;
+  vec2 q=vec2(fbm(uv*scl+vec2(0.0,t*0.07)),
+               fbm(uv*scl+vec2(5.2,t*0.05)));
+  vec2 r=vec2(fbm(uv*scl*1.4+4.0*q+vec2(1.7,9.2)+0.15*t),
+               fbm(uv*scl*1.4+4.0*q+vec2(8.3,2.8)+0.126*t));
+  return r;
+}
+
+void main(){
+  vec2 uv=vUv;
+  float t=uTime;
+
+  // Distort UVs using fbm
+  vec2 d=cellDistort(uv,t,uIndex);
+  vec2 duv=uv+0.12*d;
+
+  vec3 colA=palette(uIndex);
+  vec3 colB=palette(uPrev);
+
+  // animated internal gradient
+  float grd=0.5+0.5*fbm(duv*3.0+t*0.04);
+  float grd2=fbm(uv*1.5-t*0.02+vec2(d.x*2.0,d.y));
+
+  vec3 colCurrent=colA*(0.5+0.5*grd)*0.8+colA*0.3*grd2*d.x;
+  vec3 colPrev   =colB*(0.5+0.5*grd)*0.8+colB*0.3*grd2*d.y;
+
+  // Wipe transition: displacement-based reveal
+  float blend=uBlend;
+  float dispBlend=blend+0.3*(d.x-0.5);
+  dispBlend=clamp(dispBlend,0.0,1.0);
+  vec3 col=mix(colPrev,colCurrent,dispBlend);
+
+  // Subtle cell grid overlay (glass plate look)
+  float cells=fbm(uv*12.0+d*0.5+t*0.01);
+  col+=colA*0.04*cells;
+
+  // Vignette
+  vec2 vig=uv*2.0-1.0;
+  float v=1.0-dot(vig,vig)*0.45;
+  col*=v;
+
+  // Film grain
+  float grain=hash(uv*997.0+t*0.1)*0.04-0.02;
+  col+=grain;
+
+  gl_FragColor=vec4(clamp(col,0.0,1.0),1.0);
+}
+`;
+
+const uniforms = {
+  uTime:  { value:0 },
+  uIndex: { value:3 },
+  uPrev:  { value:3 },
+  uBlend: { value:1 },
+  uRes:   { value:new THREE.Vector2(window.innerWidth, window.innerHeight) },
+};
+
+const mat = new THREE.ShaderMaterial({ vertexShader:vertSrc, fragmentShader:fragSrc, uniforms });
+const mesh = new THREE.Mesh(geo, mat);
+scene.add(mesh);
+
+function resize(){
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  uniforms.uRes.value.set(window.innerWidth, window.innerHeight);
+}
+resize();
+window.addEventListener('resize', resize);
+
+// ─── CAROUSEL STATE ───────────────────────────────────────────────────────
+let current = 3;
+let transitioning = false;
+let transitionStart = 0;
+const TRANS_DUR = 900; // ms
+
+// Calculate slide width from viewport
+function getSlideW(){ return window.innerWidth * 0.5; }
+
+// NAV LAYOUT
+const navUl  = document.getElementById('screen-page-nav');
+const ctrlUl = document.getElementById('controller-parent');
+const knob   = document.getElementById('knob');
+
+function layoutNav(){
+  const sw = getSlideW();
+  const total = TOTAL;
+  navUl.style.width = (sw*total)+'px';
+  Array.from(navUl.children).forEach(li=>{
+    li.style.width = sw+'px';
+    li.style.height = '100px'; // just enough for centering
+  });
+}
+layoutNav();
+window.addEventListener('resize', layoutNav);
+
+function updateNav(idx){
+  // position nav so current item is centered
+  const sw = getSlideW();
+  const offset = sw * idx - (window.innerWidth/2 - sw/2);
+  navUl.style.transform = `translateX(${-offset}px)`;
+
+  // active classes
+  Array.from(navUl.children).forEach((li,i)=>{
+    li.classList.remove('is-current','is-prev','is-next');
+    if(i===idx) li.classList.add('is-current');
+    else if(i===idx-1) li.classList.add('is-prev');
+    else if(i===idx+1) li.classList.add('is-next');
+  });
+
+  // controller
+  Array.from(ctrlUl.children).forEach((li,i)=>{
+    li.classList.toggle('is-current', i===idx);
+  });
+
+  // knob position — each numerator item is ~34px wide
+  const itemW = ctrlUl.offsetWidth / TOTAL;
+  knob.style.transform = `translateX(${idx*itemW}px)`;
+}
+updateNav(current);
+
+function goTo(idx){
+  if(idx<0||idx>=TOTAL||transitioning||idx===current) return;
+  transitioning = true;
+  const prev = current;
+  current = idx;
+
+  uniforms.uPrev.value = prev;
+  uniforms.uIndex.value = idx;
+  uniforms.uBlend.value = 0;
+  transitionStart = performance.now();
+
+  updateNav(idx);
+
+  setTimeout(()=>{ transitioning=false; }, TRANS_DUR+100);
+}
+
+// ─── CONTROLS ─────────────────────────────────────────────────────────────
+// Controller clicks
+Array.from(ctrlUl.children).forEach(li=>{
+  li.addEventListener('click',()=>goTo(+li.dataset.idx));
+});
+
+// Nav item clicks
+Array.from(navUl.children).forEach(li=>{
+  li.addEventListener('click',e=>{
+    if(!li.classList.contains('watashi')) e.preventDefault();
+    goTo(+li.dataset.idx);
+  });
+});
+
+// Keyboard
+window.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp')   goTo(current-1);
+});
+
+// Wheel
+let wCool=false;
+window.addEventListener('wheel',e=>{
+  if(wCool) return;
+  wCool=true;
+  if(e.deltaX>30||e.deltaY>30) goTo(current+1);
+  else if(e.deltaX<-30||e.deltaY<-30) goTo(current-1);
+  setTimeout(()=>wCool=false, 900);
+},{passive:true});
+
+// Drag/swipe
+let dragX=0,dragging=false,dDelta=0;
+window.addEventListener('pointerdown',e=>{ dragging=true;dragX=e.clientX;dDelta=0; });
+window.addEventListener('pointermove',e=>{ if(dragging) dDelta=e.clientX-dragX; });
+window.addEventListener('pointerup',()=>{
+  if(!dragging) return;
+  dragging=false;
+  if(dDelta<-60) goTo(current+1);
+  else if(dDelta>60) goTo(current-1);
+  dDelta=0;
+});
+
+// ─── CURSOR ───────────────────────────────────────────────────────────────
+const cursor = document.getElementById('waiting-cover-cursor');
+let cursorVisible = false;
+window.addEventListener('mousemove',e=>{
+  cursor.style.left=e.clientX+'px';
+  cursor.style.top=e.clientY+'px';
+  if(!cursorVisible){ cursor.style.opacity='0.9'; cursorVisible=true; }
+});
+window.addEventListener('mouseleave',()=>{ cursor.style.opacity='0'; cursorVisible=false; });
+
+// ─── RENDER LOOP ──────────────────────────────────────────────────────────
+function animate(ts){
+  requestAnimationFrame(animate);
+
+  uniforms.uTime.value = ts * 0.001;
+
+  // Animate blend
+  if(transitioning || uniforms.uBlend.value < 1){
+    const elapsed = ts - transitionStart;
+    const t = Math.min(elapsed / TRANS_DUR, 1);
+    // ease out cubic
+    const eased = 1-(1-t)*(1-t)*(1-t);
+    uniforms.uBlend.value = eased;
+  }
+
+  renderer.render(scene, camera);
+}
+requestAnimationFrame(animate);
+
+// ─── PROGRESS BAR ─────────────────────────────────────────────────────────
+const progressBar = document.getElementById('progress-indicator');
+const AUTO_INTERVAL = 6000;
+let progressStart = performance.now();
+
+function tickProgress(ts){
+  requestAnimationFrame(tickProgress);
+  const elapsed = ts - progressStart;
+  const frac = Math.min(elapsed / AUTO_INTERVAL, 1);
+  progressBar.style.transform = `scaleX(${frac})`;
+  if(frac >= 1){
+    progressStart = ts;
+    goTo((current+1) % TOTAL);
+  }
+}
+requestAnimationFrame(tickProgress);
+
+// Reset progress on manual nav
+function resetProgress(){
+  progressStart = performance.now();
+}
+ctrlUl.addEventListener('click', resetProgress);
+navUl.addEventListener('click', resetProgress);
+window.addEventListener('keydown', resetProgress);
+window.addEventListener('wheel', resetProgress);
+window.addEventListener('pointerup', resetProgress);
+</script>
 </body>
 </html>
