@@ -205,8 +205,8 @@ void main(){
 
   // very gentle displacement — no chromatic aberration
   vec2 disp;
-  disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * 0.016;
-  disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * 0.016;
+  disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * 0.020;
+  disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * 0.020;
 
   vec2 wuv = clamp(uv + disp, 0.0, 1.0);
 
