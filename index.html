@@ -19,8 +19,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   transition:opacity 0.8s ease;
 }
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
-
-/* loader elements — same aesthetic as Alliance */
 .ls-rule{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--purple),transparent);animation:lsPulse 1.8s ease-in-out infinite;}
 @keyframes lsPulse{0%,100%{opacity:.3}50%{opacity:1}}
 .ls-mark{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.6em;color:var(--purple);text-transform:uppercase;}
@@ -30,12 +28,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .ls-bar-fill{position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--purple),transparent);animation:lsBar 1.4s ease-in-out infinite;}
 @keyframes lsBar{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 
-/* ── MAIN SITE (hidden until load) ── */
+/* ── MAIN SITE ── */
 #site-wrap{opacity:0;transition:opacity 0.8s ease;}
 #site-wrap.visible{opacity:1;}
 
-#stage{position:fixed;inset:0;z-index:0;background:#040006;}
-#stage canvas{width:100%!important;height:100%!important;}
+/* ── STAGE: centres the canvas rectangle ── */
+#stage{
+  position:fixed;inset:0;z-index:0;
+  background:#000;
+  display:flex;align-items:center;justify-content:center;
+  /* parallax tilt applied via JS */
+  will-change:transform;
+}
+#stage canvas{
+  display:block;
+  border-radius:2px;
+  /* size set by renderer in JS — no !important overrides */
+}
+
 #title{position:fixed;top:0;left:0;right:0;z-index:30;padding:28px 40px;}
 #title a{text-decoration:none;color:var(--white);font-size:13px;letter-spacing:0.3em;display:inline-flex;align-items:center;position:relative;}
 #title-indicator{display:inline-block;width:60px;height:1px;background:var(--white);margin-left:12px;transform-origin:left center;transform:scaleX(0.75);transition:transform 0.4s;}
@@ -137,15 +147,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
 
-// Dismiss after a fixed delay (replaces video-end trigger)
 function dismissLoader(){
   loadingScreen.classList.add('fade-out');
   siteWrap.classList.add('visible');
   setTimeout(()=>{ loadingScreen.style.display='none'; }, 900);
   startAutoAdvance();
 }
-
-// Show loader for ~2.4 s (matches the bar animation feel)
 setTimeout(dismissLoader, 2400);
 
 // ─── THREE.JS SETUP ───────────────────────────────────────────────────────
@@ -192,7 +199,6 @@ float wave(vec2 p, float freq, float phase){
 void main(){
   vec2 uv = vUv;
 
-  // ── water displacement ──
   float w1 = wave(uv, 3.1,  0.0);
   float w2 = wave(uv, 5.7,  2.1);
   float w3 = wave(uv * 1.4, 2.3, 4.3);
@@ -200,11 +206,10 @@ void main(){
 
   vec2 disp;
   disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * 0.025;
-  disp.y = (w2*0.5 + w1*0.25 + w4*0.2 + w3*0.05) * 0.025;
+  disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * 0.025;
 
   vec2 wuv = clamp(uv + disp, 0.0, 1.0);
 
-  // ── chromatic aberration on displacement ──
   float ca = 0.006;
   vec3 colA, colB;
   if(uHasTexA == 1){
@@ -223,18 +228,15 @@ void main(){
     colB = vec3(0.04, 0.02, 0.12);
   }
 
-  // ── specular highlights from waves ──
   float spec = max(0.0, w1 * 0.4 + w2 * 0.3 + 0.3);
   vec3 highlight = vec3(0.08, 0.10, 0.18) * pow(spec, 4.0);
 
   vec3 col = mix(colB, colA, clamp(uBlend, 0.0, 1.0));
   col += highlight * 0.4;
 
-  // ── vignette ──
   vec2 vig = uv * 2.0 - 1.0;
   col *= 1.0 - dot(vig, vig) * 0.45;
 
-  // ── grain ──
   float grain = fract(sin(dot(uv * 997.0, vec2(12.9898, 78.233))) * 43758.5453);
   col += grain * 0.025 - 0.0125;
 
@@ -279,9 +281,14 @@ const uniforms = {
 
 scene.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({vertexShader:vertSrc,fragmentShader:fragSrc,uniforms})));
 
-function resize(){ renderer.setSize(window.innerWidth,window.innerHeight); }
+// ─── RESIZE: canvas is only as big as the rectangle ───────────────────────
+function resize(){
+  const w = Math.round(window.innerWidth  * 0.52);
+  const h = Math.round(window.innerHeight * 0.70);
+  renderer.setSize(w, h);
+}
 resize();
-window.addEventListener('resize',resize);
+window.addEventListener('resize', resize);
 
 // ─── NAV ──────────────────────────────────────────────────────────────────
 let current=0, transitioning=false, transitionStart=0;
@@ -332,55 +339,25 @@ setTimeout(()=>{
 },100);
 
 // ─── INPUT ────────────────────────────────────────────────────────────────
-// Bottom controller dots: slide to that index
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
-// Nav items: short tap = navigate to href, drag = slide
-// We track pointer down/up to distinguish tap from drag
-navUl.addEventListener('pointerdown', e=>{
-  dragStartX = e.clientX;
-  dragMoved  = false;
-});
+navUl.addEventListener('pointerdown', e=>{ dragStartX=e.clientX; dragMoved=false; });
+navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
 
-navUl.addEventListener('pointermove', e=>{
-  if(Math.abs(e.clientX - dragStartX) > 8) dragMoved = true;
-});
-
-// Intercept clicks on nav <a> tags — only navigate if it wasn't a drag
 navUl.addEventListener('click', e=>{
-  // find the <li>
-  const li = e.target.closest('li[data-idx]');
+  const li=e.target.closest('li[data-idx]');
   if(!li) return;
+  const idx=+li.dataset.idx, href=li.dataset.href;
+  if(dragMoved){ e.preventDefault(); goTo(idx); return; }
+  if(idx===current){ if(href){ e.preventDefault(); window.location.href=href; } }
+  else { e.preventDefault(); goTo(idx); }
+}, true);
 
-  const idx  = +li.dataset.idx;
-  const href = li.dataset.href;
-
-  if(dragMoved){
-    // Was a drag swipe — don't follow link, just slide
-    e.preventDefault();
-    goTo(idx);
-    return;
-  }
-
-  // Short tap: if current slide, follow the link; otherwise first tap slides to it
-  if(idx === current){
-    if(href){
-      e.preventDefault();
-      window.location.href = href;
-    }
-  } else {
-    e.preventDefault();
-    goTo(idx);
-  }
-}, true); // capture phase so it runs before the <a> default
-
-// Keyboard
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
   if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1);
 });
 
-// Wheel
 let wCool=false;
 window.addEventListener('wheel',e=>{
   if(wCool)return; wCool=true;
@@ -389,18 +366,10 @@ window.addEventListener('wheel',e=>{
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
-// Global drag tracking (for swipe outside nav, and to feed dragMoved)
 let dragStartX=0, dragMoved=false;
 window.addEventListener('pointerdown',e=>{ dragStartX=e.clientX; dragMoved=false; });
 window.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
-window.addEventListener('pointerup',()=>{
-  if(dragMoved){
-    const d = /* we recalc from tracking */ 0; // handled via navUl click above
-    // For swipes on the stage (outside nav), still slide
-  }
-});
 
-// Stage drag (non-nav area)
 let stageDragX=0, stageDragging=false, stageDelta=0;
 document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;});
 window.addEventListener('pointermove',e=>{ if(stageDragging) stageDelta=e.clientX-stageDragX; });
@@ -429,7 +398,7 @@ window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
   renderer.render(scene,camera);
 })();
 
-// ─── AUTO-ADVANCE (starts after loader dismisses) ─────────────────────────
+// ─── AUTO-ADVANCE ─────────────────────────────────────────────────────────
 const progressBar=document.getElementById('progress-indicator');
 const AUTO_INTERVAL=6000;
 let progressStart=0, autoRunning=false;
@@ -454,6 +423,32 @@ navUl.addEventListener('click',resetProgress);
 window.addEventListener('keydown',resetProgress);
 window.addEventListener('wheel',resetProgress);
 window.addEventListener('pointerup',resetProgress);
+
+// ─── PARALLAX TILT ────────────────────────────────────────────────────────
+const stageEl = document.getElementById('stage');
+let mouseX=0, mouseY=0, tiltX=0, tiltY=0;
+
+window.addEventListener('mousemove', e=>{
+  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;  // -1 to 1
+  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+});
+
+// reset tilt smoothly when mouse leaves
+window.addEventListener('mouseleave', ()=>{ mouseX=0; mouseY=0; });
+
+(function tiltLoop(){
+  requestAnimationFrame(tiltLoop);
+  tiltX += (mouseX - tiltX) * 0.05;
+  tiltY += (mouseY - tiltY) * 0.05;
+
+  const rx =  tiltY * 5;    // vertical tilt in degrees
+  const ry = -tiltX * 5;    // horizontal tilt in degrees
+  const tx =  tiltX * 20;   // horizontal shift in px
+  const ty =  tiltY * 12;   // vertical shift in px
+
+  stageEl.style.transform =
+    `perspective(1000px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
+})();
 </script>
 </body>
 </html>
