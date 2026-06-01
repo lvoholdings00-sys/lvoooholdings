@@ -9,7 +9,11 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 :root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
-html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;cursor:none;user-select:none;}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;user-select:none;}
+
+/* ── Hide custom cursor on touch devices ── */
+@media (pointer:coarse){ body{ cursor:auto; } #waiting-cover-cursor{ display:none!important; } }
+@media (pointer:fine){ body{ cursor:none; } }
 
 /* ── LOADING SCREEN ── */
 #loading-screen{
@@ -21,9 +25,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
 .ls-rule{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--purple),transparent);animation:lsPulse 1.8s ease-in-out infinite;}
 @keyframes lsPulse{0%,100%{opacity:.3}50%{opacity:1}}
-.ls-mark{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.6em;color:var(--purple);text-transform:uppercase;}
+.ls-mark{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.6em;color:var(--purple);text-transform:uppercase;text-align:center;padding:0 1rem;}
 .ls-name{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;letter-spacing:.25em;color:#C8C8D0;line-height:1;}
-.ls-sub{font-family:'Cormorant SC',serif;font-size:.48rem;letter-spacing:.5em;color:rgba(255,255,255,0.38);text-transform:uppercase;}
+.ls-sub{font-family:'Cormorant SC',serif;font-size:.48rem;letter-spacing:.5em;color:rgba(255,255,255,0.38);text-transform:uppercase;text-align:center;padding:0 1rem;}
 .ls-bar{width:200px;height:1px;background:rgba(127,119,221,.2);overflow:hidden;position:relative;}
 .ls-bar-fill{position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--purple),transparent);animation:lsBar 1.4s ease-in-out infinite;}
 @keyframes lsBar{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
@@ -44,35 +48,76 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   display:block;
 }
 
-#title{position:fixed;top:0;left:0;right:0;z-index:30;padding:28px 40px;}
-#title a{text-decoration:none;color:var(--white);font-size:13px;letter-spacing:0.3em;display:inline-flex;align-items:center;position:relative;}
-#title-indicator{display:inline-block;width:60px;height:1px;background:var(--white);margin-left:12px;transform-origin:left center;transform:scaleX(0.75);transition:transform 0.4s;}
+/* ── TITLE ── */
+#title{
+  position:fixed;top:0;left:0;right:0;z-index:30;
+  padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);
+}
+#title a{text-decoration:none;color:var(--white);font-size:clamp(9px,2vw,13px);letter-spacing:0.3em;display:inline-flex;align-items:center;position:relative;}
+#title-indicator{display:inline-block;width:40px;height:1px;background:var(--white);margin-left:12px;transform-origin:left center;transform:scaleX(0.75);transition:transform 0.4s;}
 #title a:hover #title-indicator{transform:scaleX(1);}
-#stage-nav{position:fixed;top:50%;left:0;right:0;z-index:30;transform:translateY(-50%);overflow:hidden;pointer-events:none;}
+
+/* ── STAGE NAV ── */
+#stage-nav{
+  position:fixed;top:50%;left:0;right:0;z-index:30;
+  transform:translateY(-50%);overflow:hidden;pointer-events:none;
+}
 #screen-page-nav{display:flex;list-style:none;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);will-change:transform;}
 #screen-page-nav li{flex-shrink:0;display:flex;align-items:center;justify-content:center;pointer-events:all;}
-#screen-page-nav li a{text-decoration:none;color:var(--white);font-size:clamp(32px,5vw,68px);letter-spacing:0.02em;line-height:1;display:block;padding:0 20px;transition:opacity 0.4s;white-space:nowrap;font-family:'IM Fell English',Georgia,serif;font-style:italic;}
+#screen-page-nav li a{
+  text-decoration:none;color:var(--white);
+  font-size:clamp(22px,5vw,68px);
+  letter-spacing:0.02em;line-height:1;display:block;
+  padding:0 clamp(8px,2vw,20px);
+  transition:opacity 0.4s;white-space:nowrap;
+  font-family:'IM Fell English',Georgia,serif;font-style:italic;
+}
 #screen-page-nav li a{opacity:0.3;}
 #screen-page-nav li.is-current a{opacity:1;}
 #screen-page-nav li:hover a{opacity:0.7;}
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
-#screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(48px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
-#screen-page-nav li.lvo-about .about-inner .lvo-sub{font-size:11px;letter-spacing:0.4em;color:var(--dimmer);display:block;margin-top:10px;}
+#screen-page-nav li.lvo-about .about-inner .lvo-big{
+  font-family:'IM Fell English',Georgia,serif;font-style:italic;
+  font-size:clamp(36px,7vw,96px);
+  color:var(--white);letter-spacing:0.08em;line-height:1;display:block;
+}
+#screen-page-nav li.lvo-about .about-inner .lvo-sub{
+  font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;
+  color:var(--dimmer);display:block;margin-top:10px;
+}
+
+/* ── PROGRESS BAR ── */
 #progress-indicator{position:fixed;top:0;left:0;z-index:40;height:1px;background:var(--white);width:100%;transform-origin:left center;transform:scaleX(0);}
-#screen-controller{position:fixed;bottom:0;left:50%;z-index:30;transform:translateX(-50%);padding-bottom:20px;pointer-events:all;}
+
+/* ── BOTTOM CONTROLLER ── */
+#screen-controller{
+  position:fixed;bottom:0;left:50%;z-index:30;
+  transform:translateX(-50%);
+  padding-bottom:clamp(12px,3vw,20px);
+  pointer-events:all;
+}
 #screen-controller .inner{position:relative;display:flex;align-items:flex-end;}
 #knob{position:absolute;bottom:0;left:0;display:flex;align-items:flex-end;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);pointer-events:none;z-index:2;}
 .separator{display:block;width:1px;height:16px;background:var(--white);position:relative;bottom:-1px;}
-.denominator{font-size:11px;color:var(--dimmer);letter-spacing:0.1em;padding-left:6px;line-height:1;position:relative;bottom:3px;}
+.denominator{font-size:clamp(9px,2vw,11px);color:var(--dimmer);letter-spacing:0.1em;padding-left:6px;line-height:1;position:relative;bottom:3px;}
 #controller-parent{list-style:none;display:flex;align-items:flex-end;border-bottom:0.5px solid rgba(255,255,255,0.2);}
 #controller-parent li{cursor:pointer;}
-.numerator{display:block;font-size:11px;letter-spacing:0.1em;color:var(--dimmer);padding:0 8px 8px;transition:color 0.3s;line-height:1;}
+.numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
+
+/* ── CUSTOM CURSOR (desktop only) ── */
 #waiting-cover-cursor{position:fixed;pointer-events:none;z-index:900;width:52px;height:52px;margin-left:-26px;margin-top:-26px;}
 #waiting-cover-cursor .inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 #waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+/* ── MOBILE: disable 3D parallax tilt ── */
+@media (max-width:600px){
+  #stage{ transform:none!important; will-change:auto; }
+  #title a span:first-child{ display:none; }
+  #title a::before{ content:'LVO'; font-family:'Cinzel',serif; font-size:13px; letter-spacing:.3em; color:var(--white); }
+}
 </style>
 </head>
 <body>
@@ -141,6 +186,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+// ─── WATER INTENSITY CONTROL ─────────────────────────────────────────────
+// Change this value to control water effect strength:
+//   0.004 = barely visible / ultra-subtle
+//   0.012 = default (original)
+//   0.025 = noticeably wavy
+//   0.045 = dramatic / strong
+const WATER_INTENSITY = 0.012;
+
+// Wave speed (multipliers on uTime in the shader — edit fragSrc below if needed)
+// These are baked into the shader but WATER_INTENSITY is the main dial.
+
 // ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
@@ -177,6 +233,7 @@ varying vec2 vUv;
 void main(){ vUv=uv; gl_Position=vec4(position,1.0); }
 `;
 
+// WATER_INTENSITY is injected at runtime via template literal below
 const fragSrc = `
 precision highp float;
 uniform float uTime;
@@ -187,6 +244,7 @@ uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
 uniform int uHasTexB;
+uniform float uWaterIntensity;
 varying vec2 vUv;
 
 float wave(vec2 p, float freq, float phase){
@@ -203,10 +261,10 @@ void main(){
   float w3 = wave(uv * 1.3, 1.9, 4.3);
   float w4 = wave(uv * 0.6, 6.2, 1.7);
 
-  // very gentle displacement — no chromatic aberration
+  // displacement controlled by uWaterIntensity
   vec2 disp;
-  disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * 0.020;
-  disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * 0.020;
+  disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * uWaterIntensity;
+  disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * uWaterIntensity;
 
   vec2 wuv = clamp(uv + disp, 0.0, 1.0);
 
@@ -267,14 +325,15 @@ SLIDES.forEach((s,i)=>{
 });
 
 const uniforms = {
-  uTime:    {value:0},
-  uIndex:   {value:0},
-  uPrev:    {value:0},
-  uBlend:   {value:1},
-  uTexA:    {value:placeholder},
-  uTexB:    {value:placeholder},
-  uHasTexA: {value:0},
-  uHasTexB: {value:0},
+  uTime:           {value:0},
+  uIndex:          {value:0},
+  uPrev:           {value:0},
+  uBlend:          {value:1},
+  uTexA:           {value:placeholder},
+  uTexB:           {value:placeholder},
+  uHasTexA:        {value:0},
+  uHasTexB:        {value:0},
+  uWaterIntensity: {value:WATER_INTENSITY},  // ← controlled by the constant above
 };
 
 scene.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({vertexShader:vertSrc,fragmentShader:fragSrc,uniforms})));
@@ -292,7 +351,10 @@ const ctrlUl=document.getElementById('controller-parent');
 const knob=document.getElementById('knob');
 
 function layoutNav(){
-  const sw=window.innerWidth*0.5;
+  // On mobile use 80vw per slide so it doesn't feel squished, desktop stays 50vw
+  const isMobile = window.innerWidth < 600;
+  const sw = isMobile ? window.innerWidth * 0.8 : window.innerWidth * 0.5;
+  navUl.dataset.sw = sw;
   navUl.style.width=(sw*TOTAL)+'px';
   Array.from(navUl.children).forEach(li=>{ li.style.width=sw+'px'; li.style.minHeight='80px'; });
 }
@@ -300,7 +362,7 @@ layoutNav();
 window.addEventListener('resize',layoutNav);
 
 function updateNav(idx){
-  const sw=window.innerWidth*0.5;
+  const sw = parseFloat(navUl.dataset.sw) || window.innerWidth * 0.5;
   navUl.style.transform=`translateX(${-(sw*idx-(window.innerWidth/2-sw/2))}px)`;
   Array.from(navUl.children).forEach((li,i)=>{
     li.classList.remove('is-current','is-prev','is-next');
@@ -335,6 +397,7 @@ setTimeout(()=>{
 // ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
+let dragMoved=false, dragStartX=0;
 navUl.addEventListener('pointerdown', e=>{ dragStartX=e.clientX; dragMoved=false; });
 navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
 
@@ -360,26 +423,29 @@ window.addEventListener('wheel',e=>{
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
-let dragStartX=0, dragMoved=false;
 window.addEventListener('pointerdown',e=>{ dragStartX=e.clientX; dragMoved=false; });
 window.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
 
+// Stage swipe (touch-friendly)
 let stageDragX=0, stageDragging=false, stageDelta=0;
-document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;});
+document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;e.preventDefault();},{passive:false});
 window.addEventListener('pointermove',e=>{ if(stageDragging) stageDelta=e.clientX-stageDragX; });
 window.addEventListener('pointerup',()=>{
   if(!stageDragging)return; stageDragging=false;
-  if(stageDelta<-60) goTo(current+1);
-  else if(stageDelta>60) goTo(current-1);
+  if(stageDelta<-50) goTo(current+1);
+  else if(stageDelta>50) goTo(current-1);
   stageDelta=0;
 });
 
-// ─── CURSOR ───────────────────────────────────────────────────────────────
+// ─── CURSOR (desktop only) ────────────────────────────────────────────────
 const cursor=document.getElementById('waiting-cover-cursor');
-window.addEventListener('mousemove',e=>{
-  cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9';
-});
-window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
+const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
+if(!isTouchDevice){
+  window.addEventListener('mousemove',e=>{
+    cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9';
+  });
+  window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
+}
 
 // ─── RENDER ───────────────────────────────────────────────────────────────
 (function animate(ts){
@@ -394,7 +460,7 @@ window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
 
 // ─── AUTO-ADVANCE ─────────────────────────────────────────────────────────
 const progressBar=document.getElementById('progress-indicator');
-const AUTO_INTERVAL=6000;
+const AUTO_INTERVAL=12000;
 let progressStart=0, autoRunning=false;
 
 function resetProgress(){ progressStart=performance.now(); }
@@ -418,27 +484,29 @@ window.addEventListener('keydown',resetProgress);
 window.addEventListener('wheel',resetProgress);
 window.addEventListener('pointerup',resetProgress);
 
-// ─── PARALLAX TILT ────────────────────────────────────────────────────────
+// ─── PARALLAX TILT (desktop only) ─────────────────────────────────────────
 const stageEl = document.getElementById('stage');
 let mouseX=0, mouseY=0, tiltX=0, tiltY=0;
 
-window.addEventListener('mousemove', e=>{
-  mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-  mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-});
-window.addEventListener('mouseleave', ()=>{ mouseX=0; mouseY=0; });
+if(!isTouchDevice){
+  window.addEventListener('mousemove', e=>{
+    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  });
+  window.addEventListener('mouseleave', ()=>{ mouseX=0; mouseY=0; });
 
-(function tiltLoop(){
-  requestAnimationFrame(tiltLoop);
-  tiltX += (mouseX - tiltX) * 0.05;
-  tiltY += (mouseY - tiltY) * 0.05;
-  const rx =  tiltY * 4;
-  const ry = -tiltX * 4;
-  const tx =  tiltX * 14;
-  const ty =  tiltY * 8;
-  stageEl.style.transform =
-    `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
-})();
+  (function tiltLoop(){
+    requestAnimationFrame(tiltLoop);
+    tiltX += (mouseX - tiltX) * 0.05;
+    tiltY += (mouseY - tiltY) * 0.05;
+    const rx =  tiltY * 4;
+    const ry = -tiltX * 4;
+    const tx =  tiltX * 14;
+    const ty =  tiltY * 8;
+    stageEl.style.transform =
+      `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
+  })();
+}
 </script>
 </body>
 </html>
