@@ -5,37 +5,34 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
 <title>𝐋𝐕𝐎 ♱⃓ᛪ༙ Holdings</title>
 <link rel="icon" type="image/png" href="assets/logo.png">
-<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;900&family=Cormorant+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);}
+:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;cursor:none;user-select:none;}
 
 /* ── LOADING SCREEN ── */
 #loading-screen{
   position:fixed;inset:0;z-index:9999;
   background:#000;
-  display:flex;align-items:center;justify-content:center;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;
   transition:opacity 0.8s ease;
 }
-#loading-screen.fade-out{
-  opacity:0;
-  pointer-events:none;
-}
-#loading-video{
-  width:100%;height:100%;
-  object-fit:cover;
-  display:block;
-}
+#loading-screen.fade-out{opacity:0;pointer-events:none;}
+
+/* loader elements — same aesthetic as Alliance */
+.ls-rule{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--purple),transparent);animation:lsPulse 1.8s ease-in-out infinite;}
+@keyframes lsPulse{0%,100%{opacity:.3}50%{opacity:1}}
+.ls-mark{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.6em;color:var(--purple);text-transform:uppercase;}
+.ls-name{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;letter-spacing:.25em;color:#C8C8D0;line-height:1;}
+.ls-sub{font-family:'Cormorant SC',serif;font-size:.48rem;letter-spacing:.5em;color:rgba(255,255,255,0.38);text-transform:uppercase;}
+.ls-bar{width:200px;height:1px;background:rgba(127,119,221,.2);overflow:hidden;position:relative;}
+.ls-bar-fill{position:absolute;inset:0;background:linear-gradient(90deg,transparent,var(--purple),transparent);animation:lsBar 1.4s ease-in-out infinite;}
+@keyframes lsBar{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
 
 /* ── MAIN SITE (hidden until load) ── */
-#site-wrap{
-  opacity:0;
-  transition:opacity 0.8s ease;
-}
-#site-wrap.visible{
-  opacity:1;
-}
+#site-wrap{opacity:0;transition:opacity 0.8s ease;}
+#site-wrap.visible{opacity:1;}
 
 #stage{position:fixed;inset:0;z-index:0;background:#040006;}
 #stage canvas{width:100%!important;height:100%!important;}
@@ -74,8 +71,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 <!-- ── LOADING SCREEN ── -->
 <div id="loading-screen">
-  <video id="loading-video" src="assets/0410.mp4"
-    autoplay muted playsinline preload="auto"></video>
+  <div class="ls-rule"></div>
+  <div class="ls-mark">LVO Holdings · Legion V. Omni-Operations</div>
+  <div class="ls-name">LVO</div>
+  <div class="ls-sub">Legion V. Omni-Operations</div>
+  <div class="ls-bar"><div class="ls-bar-fill"></div></div>
 </div>
 
 <!-- ── MAIN SITE ── -->
@@ -94,11 +94,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   <div id="stage-nav">
     <ul id="screen-page-nav">
-      <li data-idx="0"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
-      <li data-idx="1"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
-      <li data-idx="2"><a href="https://ops.wearelvo.com/">Operations</a></li>
-      <li data-idx="3"><a href="https://contact.wearelvo.com/">Connect</a></li>
-      <li class="lvo-about" data-idx="4">
+      <li data-idx="0" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <li data-idx="1" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <li data-idx="2" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
+      <li data-idx="3" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
+      <li class="lvo-about" data-idx="4" data-href="">
         <div class="about-inner">
           <span class="lvo-big">LVO</span>
           <span class="lvo-sub">LEGION V. OMNI-OPERATIONS</span>
@@ -135,28 +135,18 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 <script>
 // ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
-const loadingVideo  = document.getElementById('loading-video');
 const siteWrap      = document.getElementById('site-wrap');
 
+// Dismiss after a fixed delay (replaces video-end trigger)
 function dismissLoader(){
   loadingScreen.classList.add('fade-out');
   siteWrap.classList.add('visible');
-  // fully remove after fade
   setTimeout(()=>{ loadingScreen.style.display='none'; }, 900);
   startAutoAdvance();
 }
 
-// Dismiss when video ends
-loadingVideo.addEventListener('ended', dismissLoader);
-
-// Safety fallback — if video fails to load or stalls, dismiss after 7s
-const loaderTimeout = setTimeout(dismissLoader, 7000);
-
-// Once video ends, clear the timeout
-loadingVideo.addEventListener('ended', ()=> clearTimeout(loaderTimeout));
-
-// If video can't play at all, dismiss immediately after short delay
-loadingVideo.addEventListener('error', ()=>{ clearTimeout(loaderTimeout); setTimeout(dismissLoader, 500); });
+// Show loader for ~2.4 s (matches the bar animation feel)
+setTimeout(dismissLoader, 2400);
 
 // ─── THREE.JS SETUP ───────────────────────────────────────────────────────
 const GITHUB_RAW = 'https://raw.githubusercontent.com/lvoholdings00-sys/lvoooholdings/main/assets/';
@@ -320,12 +310,55 @@ setTimeout(()=>{
 },100);
 
 // ─── INPUT ────────────────────────────────────────────────────────────────
+// Bottom controller dots: slide to that index
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
-Array.from(navUl.children).forEach(li=>li.addEventListener('click',e=>{ e.preventDefault(); goTo(+li.dataset.idx); }));
+
+// Nav items: short tap = navigate to href, drag = slide
+// We track pointer down/up to distinguish tap from drag
+navUl.addEventListener('pointerdown', e=>{
+  dragStartX = e.clientX;
+  dragMoved  = false;
+});
+
+navUl.addEventListener('pointermove', e=>{
+  if(Math.abs(e.clientX - dragStartX) > 8) dragMoved = true;
+});
+
+// Intercept clicks on nav <a> tags — only navigate if it wasn't a drag
+navUl.addEventListener('click', e=>{
+  // find the <li>
+  const li = e.target.closest('li[data-idx]');
+  if(!li) return;
+
+  const idx  = +li.dataset.idx;
+  const href = li.dataset.href;
+
+  if(dragMoved){
+    // Was a drag swipe — don't follow link, just slide
+    e.preventDefault();
+    goTo(idx);
+    return;
+  }
+
+  // Short tap: if current slide, follow the link; otherwise first tap slides to it
+  if(idx === current){
+    if(href){
+      e.preventDefault();
+      window.location.href = href;
+    }
+  } else {
+    e.preventDefault();
+    goTo(idx);
+  }
+}, true); // capture phase so it runs before the <a> default
+
+// Keyboard
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
   if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1);
 });
+
+// Wheel
 let wCool=false;
 window.addEventListener('wheel',e=>{
   if(wCool)return; wCool=true;
@@ -333,13 +366,27 @@ window.addEventListener('wheel',e=>{
   else if(e.deltaX<-30||e.deltaY<-30) goTo(current-1);
   setTimeout(()=>wCool=false,900);
 },{passive:true});
-let dragX=0,dragging=false,dDelta=0;
-window.addEventListener('pointerdown',e=>{ dragging=true;dragX=e.clientX;dDelta=0; });
-window.addEventListener('pointermove',e=>{ if(dragging) dDelta=e.clientX-dragX; });
+
+// Global drag tracking (for swipe outside nav, and to feed dragMoved)
+let dragStartX=0, dragMoved=false;
+window.addEventListener('pointerdown',e=>{ dragStartX=e.clientX; dragMoved=false; });
+window.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
 window.addEventListener('pointerup',()=>{
-  if(!dragging)return; dragging=false;
-  if(dDelta<-60) goTo(current+1); else if(dDelta>60) goTo(current-1);
-  dDelta=0;
+  if(dragMoved){
+    const d = /* we recalc from tracking */ 0; // handled via navUl click above
+    // For swipes on the stage (outside nav), still slide
+  }
+});
+
+// Stage drag (non-nav area)
+let stageDragX=0, stageDragging=false, stageDelta=0;
+document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;});
+window.addEventListener('pointermove',e=>{ if(stageDragging) stageDelta=e.clientX-stageDragX; });
+window.addEventListener('pointerup',()=>{
+  if(!stageDragging)return; stageDragging=false;
+  if(stageDelta<-60) goTo(current+1);
+  else if(stageDelta>60) goTo(current-1);
+  stageDelta=0;
 });
 
 // ─── CURSOR ───────────────────────────────────────────────────────────────
