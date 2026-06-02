@@ -94,10 +94,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
-@media (max-width:600px){
+@media (max-width:768px){
   #stage{transform:none!important;will-change:auto;}
   #title a span:first-child{display:none;}
   #title a::before{content:'LVO';font-family:'Cinzel',serif;font-size:13px;letter-spacing:.3em;color:var(--white);}
+  /* Reduce water effect on mobile for better performance */
+  #stage canvas{opacity:0.95;}
 }
 
 /* ── VIDEO BACKGROUND ── */
@@ -195,9 +197,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ─── WATER INTENSITY ──────────────────────────────────────────────────────
-// 0.004=barely visible  0.012=default  0.025=wavy  0.045=dramatic
-const WATER_INTENSITY = 0.028;
+// ─── DEVICE DETECTION ─────────────────────────────────────────────────────
+const isMobileDevice = window.innerWidth <= 768;
+const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+
+// Adjust water intensity based on device
+let WATER_INTENSITY = 0.028; // default desktop
+if (isMobileDevice) {
+  WATER_INTENSITY = 0.015; // less intense on mobile for better performance
+} else if (isTablet) {
+  WATER_INTENSITY = 0.022;
+}
 
 // ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
@@ -210,15 +220,41 @@ function dismissLoader(){
 }
 setTimeout(dismissLoader, 2400);
 
-// ─── SLIDES ───────────────────────────────────────────────────────────────
-// Slide order: 0=LVO, 1=Connect, 2=Vindex, 3=Alliance, 4=Operations
+// ─── SLIDES WITH MOBILE SUPPORT ────────────────────────────────────────────
+// Define both desktop and mobile image URLs
 const ASSETS = 'https://assets.wearelvo.com/';
+
+// Helper function to get the correct image URL based on device
+function getImageUrl(desktopImg, mobileImg) {
+  return isMobileDevice ? mobileImg : desktopImg;
+}
+
 const SLIDES = [
-  { label:'LVO',        img: ASSETS + 'LVO.jpg' },
-  { label:'Connect',    img: ASSETS + 'LVO.jpg' },
-  { label:'Vindex',     img: ASSETS + 'Vindex.jpg'     },
-  { label:'Alliance',   img: ASSETS + 'Alliance.JPG'   },
-  { label:'Operations', img: ASSETS + 'Operations.jpg' },
+  { 
+    label:'LVO', 
+    img: ASSETS + 'LVO.jpg',
+    mobile_img: ASSETS + 'LVO_Mobile.jpg'
+  },
+  { 
+    label:'Connect', 
+    img: ASSETS + 'LVO.jpg',
+    mobile_img: ASSETS + 'LVO_Mobile.jpg'
+  },
+  { 
+    label:'Vindex', 
+    img: ASSETS + 'Vindex.jpg',
+    mobile_img: ASSETS + 'Vindex_Mobile.jpg'
+  },
+  { 
+    label:'Alliance', 
+    img: ASSETS + 'Alliance.JPG',
+    mobile_img: ASSETS + 'Alliance_Mobile.JPG'
+  },
+  { 
+    label:'Operations', 
+    img: ASSETS + 'Operations.jpg',
+    mobile_img: ASSETS + 'Operations_Mobile.jpg'
+  },
 ];
 const TOTAL = SLIDES.length;
 
@@ -355,9 +391,11 @@ const textures = new Array(TOTAL).fill(null);
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = 'anonymous';
 
+// Load appropriate images based on device type
 SLIDES.forEach((s,i)=>{
-  if(!s.img) return;
-  loader.load(s.img, tex=>{
+  const imgUrl = getImageUrl(s.img, s.mobile_img);
+  if(!imgUrl) return;
+  loader.load(imgUrl, tex=>{
     tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
     tex.minFilter=THREE.LinearFilter;
     textures[i]=tex;
