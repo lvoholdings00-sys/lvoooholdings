@@ -101,16 +101,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   #stage canvas{opacity:0.95;}
 }
 
-/* ── ABOUT TEXT OVERLAY ── */
+/* ── ABOUT BUTTON OVERLAY ── */
 #about-text{
   position:fixed;
-  top:50%;
+  bottom:clamp(60px,10vh,120px);
   left:clamp(40px,7vw,120px);
-  transform:translateY(-50%);
   z-index:30;
-  max-width:clamp(200px,28vw,360px);
-  text-align:left;
-  pointer-events:none;
+  pointer-events:all;
   opacity:0;
   transition:opacity 0.7s ease;
 }
@@ -123,59 +120,50 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   letter-spacing:.18em;
   color:#fff;
   line-height:1;
-  margin-bottom:1.4rem;
-  text-shadow:0 2px 40px rgba(0,0,0,0.8);
+  margin-bottom:1.6rem;
+  text-shadow:0 2px 40px rgba(0,0,0,0.9);
+  pointer-events:none;
 }
-#about-text .about-eyebrow{
-  display:block;
+.about-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:14px;
+  text-decoration:none;
+  border:0.5px solid rgba(255,255,255,0.35);
+  padding:12px 28px;
   font-family:'Cinzel',serif;
   font-size:clamp(8px,1vw,11px);
   font-weight:600;
-  letter-spacing:.5em;
-  color:var(--purple);
+  letter-spacing:.45em;
+  color:rgba(255,255,255,0.85);
   text-transform:uppercase;
-  margin-bottom:1.2rem;
+  background:rgba(0,0,0,0.28);
+  backdrop-filter:blur(6px);
+  transition:border-color 0.3s,color 0.3s,background 0.3s;
+  cursor:pointer;
 }
-#about-text .about-rule{
-  display:block;
-  width:100%;
+.about-btn:hover{
+  border-color:var(--purple);
+  color:#fff;
+  background:rgba(127,119,221,0.12);
+}
+.about-btn-rule{
+  display:inline-block;
+  width:24px;
   height:1px;
-  background:linear-gradient(to right,rgba(127,119,221,0.6),transparent);
-  margin-bottom:1.4rem;
+  background:currentColor;
+  opacity:0.5;
+  transition:width 0.3s;
 }
-#about-text .about-body{
-  font-family:'IM Fell English',Georgia,serif;
-  font-style:italic;
-  font-size:clamp(14px,1.6vw,20px);
-  font-weight:700;
-  line-height:1.75;
-  color:rgba(255,255,255,0.95);
-  display:block;
-  margin-bottom:1.6rem;
-  text-shadow:0 1px 12px rgba(0,0,0,0.9),0 0 4px rgba(0,0,0,0.7);
-}
-#about-text .about-sub{
-  font-family:'Cormorant SC',serif;
-  font-size:clamp(8px,0.95vw,11px);
-  font-weight:500;
-  letter-spacing:.4em;
-  color:rgba(255,255,255,0.6);
-  text-transform:uppercase;
-  display:block;
-  line-height:2;
-  text-shadow:0 1px 8px rgba(0,0,0,0.8);
-}
+.about-btn:hover .about-btn-rule{ width:36px; }
 @media(max-width:768px){
   #about-text{
     left:50%;
-    transform:translate(-50%,-50%);
+    transform:translateX(-50%);
     text-align:center;
-    max-width:80vw;
-    top:72%;
+    bottom:80px;
   }
-  #about-text .about-rule{
-    background:linear-gradient(to right,transparent,rgba(127,119,221,0.6),transparent);
-  }
+  #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 }
 
 /* ── VIDEO BACKGROUND ── */
@@ -225,16 +213,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   <!-- Edit the text below freely — eyebrow, body paragraphs, and sub-lines -->
   <div id="about-text">
     <span class="about-lvo">𝐋𝐕𝐎</span>
-    <span class="about-eyebrow">Legion V. Omni-Operations</span>
-    <span class="about-rule"></span>
-    <span class="about-body">
-      We are a holding company built at the intersection of legacy and forward motion —
-      cultivating ventures that endure.
-    </span>
-    <span class="about-sub">
-      Est. MMXXIV &nbsp;·&nbsp; Houston, TX<br>
-      Omnia vincit labor
-    </span>
+    <a class="about-btn" href="https://about.wearelvo.com/">
+      About Us
+      <span class="about-btn-rule"></span>
+    </a>
   </div>
 
   <div id="stage-nav">
