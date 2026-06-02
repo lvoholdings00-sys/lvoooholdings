@@ -8,20 +8,14 @@
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;900&family=Cormorant+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
+:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;--red:#8B0000;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;user-select:none;}
 
-/* ── Hide custom cursor on touch devices ── */
-@media (pointer:coarse){ body{ cursor:auto; } #waiting-cover-cursor{ display:none!important; } }
-@media (pointer:fine){ body{ cursor:none; } }
+@media (pointer:coarse){ body{cursor:auto;} #waiting-cover-cursor{display:none!important;} }
+@media (pointer:fine){ body{cursor:none;} }
 
 /* ── LOADING SCREEN ── */
-#loading-screen{
-  position:fixed;inset:0;z-index:9999;
-  background:#000;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;
-  transition:opacity 0.8s ease;
-}
+#loading-screen{position:fixed;inset:0;z-index:9999;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.8rem;transition:opacity 0.8s ease;}
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
 .ls-rule{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--purple),transparent);animation:lsPulse 1.8s ease-in-out infinite;}
 @keyframes lsPulse{0%,100%{opacity:.3}50%{opacity:1}}
@@ -36,67 +30,55 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #site-wrap{opacity:0;transition:opacity 0.8s ease;}
 #site-wrap.visible{opacity:1;}
 
-/* ── STAGE: fullscreen ── */
-#stage{
-  position:fixed;inset:0;z-index:0;
-  background:#000;
-  will-change:transform;
+/* ── STAGE ── */
+#stage{position:fixed;inset:0;z-index:0;background:#000;will-change:transform;}
+#stage canvas{width:100%!important;height:100%!important;display:block;}
+
+
+#lvo-logo-overlay{
+  position:fixed;inset:0;z-index:20;
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:none;
+  transition:opacity 0.7s ease;
 }
-#stage canvas{
-  width:100%!important;
-  height:100%!important;
-  display:block;
+#lvo-logo-overlay img{
+  width:clamp(180px,28vw,380px);
+  height:auto;
+  filter:drop-shadow(0 0 30px rgba(139,0,0,0.6)) drop-shadow(0 0 8px rgba(0,0,0,0.9));
+  animation:logoFloat 5s ease-in-out infinite;
 }
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0px);}
+  50%{transform:translateY(-10px);}
+}
+#lvo-logo-overlay.hidden{opacity:0;}
 
 /* ── TITLE ── */
-#title{
-  position:fixed;top:0;left:0;right:0;z-index:30;
-  padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);
-}
+#title{position:fixed;top:0;left:0;right:0;z-index:30;padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);}
 #title a{text-decoration:none;color:var(--white);font-size:clamp(9px,2vw,13px);letter-spacing:0.3em;display:inline-flex;align-items:center;position:relative;}
 #title-indicator{display:inline-block;width:40px;height:1px;background:var(--white);margin-left:12px;transform-origin:left center;transform:scaleX(0.75);transition:transform 0.4s;}
 #title a:hover #title-indicator{transform:scaleX(1);}
 
 /* ── STAGE NAV ── */
-#stage-nav{
-  position:fixed;top:50%;left:0;right:0;z-index:30;
-  transform:translateY(-50%);overflow:hidden;pointer-events:none;
-}
+#stage-nav{position:fixed;top:50%;left:0;right:0;z-index:30;transform:translateY(-50%);overflow:hidden;pointer-events:none;}
 #screen-page-nav{display:flex;list-style:none;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);will-change:transform;}
 #screen-page-nav li{flex-shrink:0;display:flex;align-items:center;justify-content:center;pointer-events:all;}
-#screen-page-nav li a{
-  text-decoration:none;color:var(--white);
-  font-size:clamp(22px,5vw,68px);
-  letter-spacing:0.02em;line-height:1;display:block;
-  padding:0 clamp(8px,2vw,20px);
-  transition:opacity 0.4s;white-space:nowrap;
-  font-family:'IM Fell English',Georgia,serif;font-style:italic;
-}
+#screen-page-nav li a{text-decoration:none;color:var(--white);font-size:clamp(22px,5vw,68px);letter-spacing:0.02em;line-height:1;display:block;padding:0 clamp(8px,2vw,20px);transition:opacity 0.4s;white-space:nowrap;font-family:'IM Fell English',Georgia,serif;font-style:italic;}
 #screen-page-nav li a{opacity:0.3;}
 #screen-page-nav li.is-current a{opacity:1;}
 #screen-page-nav li:hover a{opacity:0.7;}
+
+/* LVO slide (idx 0) — large centered logo text hidden since we show the GIF */
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
-#screen-page-nav li.lvo-about .about-inner .lvo-big{
-  font-family:'IM Fell English',Georgia,serif;font-style:italic;
-  font-size:clamp(36px,7vw,96px);
-  color:var(--white);letter-spacing:0.08em;line-height:1;display:block;
-}
-#screen-page-nav li.lvo-about .about-inner .lvo-sub{
-  font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;
-  color:var(--dimmer);display:block;margin-top:10px;
-}
+#screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
+#screen-page-nav li.lvo-about .about-inner .lvo-sub{font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;color:var(--dimmer);display:block;margin-top:10px;}
 
 /* ── PROGRESS BAR ── */
 #progress-indicator{position:fixed;top:0;left:0;z-index:40;height:1px;background:var(--white);width:100%;transform-origin:left center;transform:scaleX(0);}
 
 /* ── BOTTOM CONTROLLER ── */
-#screen-controller{
-  position:fixed;bottom:0;left:50%;z-index:30;
-  transform:translateX(-50%);
-  padding-bottom:clamp(12px,3vw,20px);
-  pointer-events:all;
-}
+#screen-controller{position:fixed;bottom:0;left:50%;z-index:30;transform:translateX(-50%);padding-bottom:clamp(12px,3vw,20px);pointer-events:all;}
 #screen-controller .inner{position:relative;display:flex;align-items:flex-end;}
 #knob{position:absolute;bottom:0;left:0;display:flex;align-items:flex-end;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);pointer-events:none;z-index:2;}
 .separator{display:block;width:1px;height:16px;background:var(--white);position:relative;bottom:-1px;}
@@ -106,17 +88,33 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
 
-/* ── CUSTOM CURSOR (desktop only) ── */
+/* ── CUSTOM CURSOR ── */
 #waiting-cover-cursor{position:fixed;pointer-events:none;z-index:900;width:52px;height:52px;margin-left:-26px;margin-top:-26px;}
 #waiting-cover-cursor .inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
 #waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
 @keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
 
-/* ── MOBILE: disable 3D parallax tilt ── */
 @media (max-width:600px){
-  #stage{ transform:none!important; will-change:auto; }
-  #title a span:first-child{ display:none; }
-  #title a::before{ content:'LVO'; font-family:'Cinzel',serif; font-size:13px; letter-spacing:.3em; color:var(--white); }
+  #stage{transform:none!important;will-change:auto;}
+  #title a span:first-child{display:none;}
+  #title a::before{content:'LVO';font-family:'Cinzel',serif;font-size:13px;letter-spacing:.3em;color:var(--white);}
+}
+
+/* ── VIDEO BACKGROUND ── */
+#video-bg{
+  position:fixed;inset:0;z-index:1;
+  width:100%;height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity 0.9s ease;
+  pointer-events:none;
+}
+#video-bg.visible{ opacity:1; }
+#stage{ z-index:2; }
+/* On video slides, blend the shader canvas so video shows through */
+#stage.video-mode canvas{
+  mix-blend-mode:screen;
+  opacity:0.35;
 }
 </style>
 </head>
@@ -135,8 +133,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 <div id="site-wrap">
 
   <div id="stage"><canvas></canvas></div>
+  <!-- Shared video background for LVO + Connect slides -->
+  <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" autoplay loop muted playsinline preload="auto"></video>
 
-  <div id="title">
+<div id="title">
     <a href="https://wearelvo.com/" id="title-link">
       <span style="letter-spacing:0.3em;">Legion V. Omni-Operations</span>
       <span id="title-indicator"></span>
@@ -147,16 +147,21 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   <div id="stage-nav">
     <ul id="screen-page-nav">
-      <li data-idx="0" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
-      <li data-idx="1" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
-      <li data-idx="2" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
-      <li data-idx="3" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
-      <li class="lvo-about" data-idx="4" data-href="">
+      <!-- Slide 0: LVO -->
+      <li class="lvo-about" data-idx="0" data-href="">
         <div class="about-inner">
-          <span class="lvo-big">LVO</span>
+          <span class="lvo-big">𝐋𝐕𝐎</span>
           <span class="lvo-sub">LEGION V. OMNI-OPERATIONS</span>
         </div>
       </li>
+      <!-- Slide 1: Connect -->
+      <li data-idx="1" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
+      <!-- Slide 2: Vindex -->
+      <li data-idx="2" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <!-- Slide 3: Alliance -->
+      <li data-idx="3" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <!-- Slide 4: Operations -->
+      <li data-idx="4" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
     </ul>
   </div>
 
@@ -186,21 +191,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ─── WATER INTENSITY CONTROL ─────────────────────────────────────────────
-// Change this value to control water effect strength:
-//   0.004 = barely visible / ultra-subtle
-//   0.012 = default (original)
-//   0.025 = noticeably wavy
-//   0.045 = dramatic / strong
-const WATER_INTENSITY = 0.025;
-
-// Wave speed (multipliers on uTime in the shader — edit fragSrc below if needed)
-// These are baked into the shader but WATER_INTENSITY is the main dial.
+// ─── WATER INTENSITY ──────────────────────────────────────────────────────
+// 0.004=barely visible  0.012=default  0.025=wavy  0.045=dramatic
+const WATER_INTENSITY = 0.012;
 
 // ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
-
 function dismissLoader(){
   loadingScreen.classList.add('fade-out');
   siteWrap.classList.add('visible');
@@ -209,18 +206,40 @@ function dismissLoader(){
 }
 setTimeout(dismissLoader, 2400);
 
-// ─── THREE.JS SETUP ───────────────────────────────────────────────────────
+// ─── SLIDES ───────────────────────────────────────────────────────────────
+// Slide order: 0=LVO, 1=Connect, 2=Vindex, 3=Alliance, 4=Operations
+// Slides 0 and 1 have no img — they use the red/black gradient shader
 const ASSETS = 'https://assets.wearelvo.com/';
-
 const SLIDES = [
+    { label:'LVO',        img: null },  // video will replace
+    { label:'Connect',    img: null },  // video will replace
   { label:'Vindex',     img: ASSETS + 'Vindex.jpg'     },
   { label:'Alliance',   img: ASSETS + 'Alliance.JPG'   },
   { label:'Operations', img: ASSETS + 'Operations.jpg' },
-  { label:'Connect',    img: null                       },
-  { label:'LVO',        img: null                       },
 ];
 const TOTAL = SLIDES.length;
 
+// Slides that use the red/black gradient (indices)
+const GRADIENT_SLIDES = new Set([]);
+
+// Slides that use the video background (LVO=0, Connect=1)
+const VIDEO_SLIDES = new Set([0, 1]);
+const videoBg  = document.getElementById('video-bg');
+const stageCanvas = document.querySelector('#stage');
+
+function updateVideoBackground(idx){
+  if(VIDEO_SLIDES.has(idx)){
+    videoBg.classList.add('visible');
+    stageCanvas.classList.add('video-mode');
+  } else {
+    videoBg.classList.remove('visible');
+    stageCanvas.classList.remove('video-mode');
+  }
+}
+updateVideoBackground(0);
+
+
+// ─── THREE.JS ─────────────────────────────────────────────────────────────
 const canvas = document.querySelector('#stage canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -233,7 +252,6 @@ varying vec2 vUv;
 void main(){ vUv=uv; gl_Position=vec4(position,1.0); }
 `;
 
-// WATER_INTENSITY is injected at runtime via template literal below
 const fragSrc = `
 precision highp float;
 uniform float uTime;
@@ -244,6 +262,8 @@ uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
 uniform int uHasTexB;
+uniform int uGradA;
+uniform int uGradB;
 uniform float uWaterIntensity;
 varying vec2 vUv;
 
@@ -252,47 +272,72 @@ float wave(vec2 p, float freq, float phase){
        * cos(p.y * freq * 0.8 + uTime * 0.2 + phase * 1.3);
 }
 
+// Deep red-black gradient for LVO/Connect slides
+vec3 redBlackGradient(vec2 uv, float t){
+  // Radial dark center, blood-red edges with subtle vein-like variation
+  vec2 center = uv - 0.5;
+  float r = length(center);
+
+  // Layered wave for organic feel
+  float w1 = wave(uv, 2.1, 0.0) * 0.5 + 0.5;
+  float w2 = wave(uv * 1.4, 3.3, 1.8) * 0.5 + 0.5;
+
+  // Deep black core fading to dark crimson at edges
+  vec3 darkCore  = vec3(0.02, 0.00, 0.01);
+  vec3 deepRed   = vec3(0.38, 0.00, 0.03);
+  vec3 bloodRed  = vec3(0.55, 0.02, 0.06);
+
+  float radial = smoothstep(0.0, 0.72, r);
+  vec3 col = mix(darkCore, deepRed, radial);
+  col = mix(col, bloodRed, w1 * 0.18 + w2 * 0.10);
+
+  // Subtle moving highlight veins
+  float vein = pow(max(0.0, wave(uv * 2.5, 1.2, t * 0.4)), 4.0);
+  col += vec3(0.25, 0.0, 0.0) * vein * 0.3;
+
+  return col;
+}
+
 void main(){
   vec2 uv = vUv;
 
-  // subtle layered waves
   float w1 = wave(uv, 2.8,  0.0);
   float w2 = wave(uv, 4.9,  2.1);
   float w3 = wave(uv * 1.3, 1.9, 4.3);
   float w4 = wave(uv * 0.6, 6.2, 1.7);
 
-  // displacement controlled by uWaterIntensity
   vec2 disp;
   disp.x = (w1*0.5 + w2*0.3 + w3*0.15 + w4*0.05) * uWaterIntensity;
   disp.y = (w2*0.5 + w1*0.25 + w4*0.2  + w3*0.05) * uWaterIntensity;
-
   vec2 wuv = clamp(uv + disp, 0.0, 1.0);
 
   vec3 colA, colB;
-  if(uHasTexA == 1){
+
+  if(uGradA == 1){
+    colA = redBlackGradient(wuv, uTime);
+  } else if(uHasTexA == 1){
     colA = texture2D(uTexA, wuv).rgb * 0.82;
   } else {
     colA = vec3(0.04, 0.02, 0.12);
   }
 
-  if(uHasTexB == 1){
+  if(uGradB == 1){
+    colB = redBlackGradient(wuv, uTime);
+  } else if(uHasTexB == 1){
     colB = texture2D(uTexB, wuv).rgb * 0.82;
   } else {
     colB = vec3(0.04, 0.02, 0.12);
   }
 
-  // subtle water-surface sheen
   float spec = max(0.0, w1 * 0.3 + w2 * 0.2 + 0.2);
   vec3 sheen = vec3(0.55, 0.52, 0.72) * pow(spec, 6.0) * 0.18;
 
   vec3 col = mix(colB, colA, clamp(uBlend, 0.0, 1.0));
   col += sheen;
 
-  // soft vignette
   vec2 vig = uv * 2.0 - 1.0;
   col *= 1.0 - dot(vig, vig) * 0.38;
 
-  // fine grain
   float grain = fract(sin(dot(uv * 997.0, vec2(12.9898, 78.233))) * 43758.5453);
   col += grain * 0.018 - 0.009;
 
@@ -333,15 +378,17 @@ const uniforms = {
   uTexB:           {value:placeholder},
   uHasTexA:        {value:0},
   uHasTexB:        {value:0},
-  uWaterIntensity: {value:WATER_INTENSITY},  // ← controlled by the constant above
+  uGradA:          {value:0},  // slide 0 uses image
+  uGradB:          {value:0},
+  uWaterIntensity: {value:WATER_INTENSITY},
 };
 
 scene.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({vertexShader:vertSrc,fragmentShader:fragSrc,uniforms})));
 
-// ─── RESIZE: fullscreen ───────────────────────────────────────────────────
 function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
 window.addEventListener('resize', resize);
+
 
 // ─── NAV ──────────────────────────────────────────────────────────────────
 let current=0, transitioning=false, transitionStart=0;
@@ -351,7 +398,6 @@ const ctrlUl=document.getElementById('controller-parent');
 const knob=document.getElementById('knob');
 
 function layoutNav(){
-  // On mobile use 80vw per slide so it doesn't feel squished, desktop stays 50vw
   const isMobile = window.innerWidth < 600;
   const sw = isMobile ? window.innerWidth * 0.8 : window.innerWidth * 0.5;
   navUl.dataset.sw = sw;
@@ -380,19 +426,18 @@ function goTo(idx){
   transitioning=true;
   const prev=current; current=idx;
   const tA=textures[idx], tB=textures[prev];
-  uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
-  uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
+  const isGradA = GRADIENT_SLIDES.has(idx) ? 1 : 0;
+  const isGradB = GRADIENT_SLIDES.has(prev) ? 1 : 0;
+  uniforms.uGradA.value = isGradA;
+  uniforms.uGradB.value = isGradB;
+  uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=(tB&&!isGradB)?1:0;
+  uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=(tA&&!isGradA)?1:0;
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
+  updateVideoBackground(idx);
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
-
-setTimeout(()=>{
-  const t=textures[0];
-  uniforms.uTexA.value=t||placeholder;
-  uniforms.uHasTexA.value=t?1:0;
-},100);
 
 // ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
@@ -400,7 +445,6 @@ Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li
 let dragMoved=false, dragStartX=0;
 navUl.addEventListener('pointerdown', e=>{ dragStartX=e.clientX; dragMoved=false; });
 navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
-
 navUl.addEventListener('click', e=>{
   const li=e.target.closest('li[data-idx]');
   if(!li) return;
@@ -426,7 +470,6 @@ window.addEventListener('wheel',e=>{
 window.addEventListener('pointerdown',e=>{ dragStartX=e.clientX; dragMoved=false; });
 window.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
 
-// Stage swipe (touch-friendly)
 let stageDragX=0, stageDragging=false, stageDelta=0;
 document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;e.preventDefault();},{passive:false});
 window.addEventListener('pointermove',e=>{ if(stageDragging) stageDelta=e.clientX-stageDragX; });
@@ -437,13 +480,11 @@ window.addEventListener('pointerup',()=>{
   stageDelta=0;
 });
 
-// ─── CURSOR (desktop only) ────────────────────────────────────────────────
+// ─── CURSOR ───────────────────────────────────────────────────────────────
 const cursor=document.getElementById('waiting-cover-cursor');
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 if(!isTouchDevice){
-  window.addEventListener('mousemove',e=>{
-    cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9';
-  });
+  window.addEventListener('mousemove',e=>{ cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9'; });
   window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
 }
 
@@ -462,13 +503,9 @@ if(!isTouchDevice){
 const progressBar=document.getElementById('progress-indicator');
 const AUTO_INTERVAL=12000;
 let progressStart=0, autoRunning=false;
-
 function resetProgress(){ progressStart=performance.now(); }
-
 function startAutoAdvance(){
-  if(autoRunning) return;
-  autoRunning=true;
-  progressStart=performance.now();
+  if(autoRunning) return; autoRunning=true; progressStart=performance.now();
   (function tickProgress(ts){
     requestAnimationFrame(tickProgress);
     if(!autoRunning) return;
@@ -477,7 +514,6 @@ function startAutoAdvance(){
     if(frac>=1){ progressStart=ts; goTo((current+1)%TOTAL); }
   })();
 }
-
 ctrlUl.addEventListener('click',resetProgress);
 navUl.addEventListener('click',resetProgress);
 window.addEventListener('keydown',resetProgress);
@@ -487,24 +523,17 @@ window.addEventListener('pointerup',resetProgress);
 // ─── PARALLAX TILT (desktop only) ─────────────────────────────────────────
 const stageEl = document.getElementById('stage');
 let mouseX=0, mouseY=0, tiltX=0, tiltY=0;
-
 if(!isTouchDevice){
   window.addEventListener('mousemove', e=>{
-    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+    mouseX=(e.clientX/window.innerWidth-0.5)*2;
+    mouseY=(e.clientY/window.innerHeight-0.5)*2;
   });
-  window.addEventListener('mouseleave', ()=>{ mouseX=0; mouseY=0; });
-
+  window.addEventListener('mouseleave',()=>{ mouseX=0; mouseY=0; });
   (function tiltLoop(){
     requestAnimationFrame(tiltLoop);
-    tiltX += (mouseX - tiltX) * 0.05;
-    tiltY += (mouseY - tiltY) * 0.05;
-    const rx =  tiltY * 4;
-    const ry = -tiltX * 4;
-    const tx =  tiltX * 14;
-    const ty =  tiltY * 8;
-    stageEl.style.transform =
-      `perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
+    tiltX+=(mouseX-tiltX)*0.05; tiltY+=(mouseY-tiltY)*0.05;
+    const rx=tiltY*4, ry=-tiltX*4, tx=tiltX*14, ty=tiltY*8;
+    stageEl.style.transform=`perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
   })();
 }
 </script>
