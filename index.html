@@ -66,6 +66,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #screen-page-nav li.is-current a{opacity:1;}
 #screen-page-nav li:hover a{opacity:0.7;}
 
+@media(max-width:768px){
+  #stage-nav{top:62%;transform:translateY(-50%);}
+}
+
 /* LVO slide (idx 1) */
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
@@ -161,7 +165,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     left:50%;
     transform:translateX(-50%);
     text-align:center;
-    bottom:80px;
+    bottom:auto;
+    top:38%;
   }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 }
