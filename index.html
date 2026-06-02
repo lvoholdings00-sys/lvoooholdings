@@ -19,7 +19,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #loading-screen.fade-out{opacity:0;pointer-events:none;}
 .ls-rule{width:1px;height:80px;background:linear-gradient(to bottom,transparent,var(--purple),transparent);animation:lsPulse 1.8s ease-in-out infinite;}
 @keyframes lsPulse{0%,100%{opacity:.3}50%{opacity:1}}
-.ls-mark{font-family:'Cinzel',serif;font-size:.55rem;letter-spacing:.6em;color:var(--purple);text-transform:uppercase;text-align:center;padding:0 1rem;}
 .ls-name{font-family:'Cinzel',serif;font-size:2.8rem;font-weight:900;letter-spacing:.25em;color:#C8C8D0;line-height:1;}
 .ls-sub{font-family:'Cormorant SC',serif;font-size:.48rem;letter-spacing:.5em;color:rgba(255,255,255,0.38);text-transform:uppercase;text-align:center;padding:0 1rem;}
 .ls-bar{width:200px;height:1px;background:rgba(127,119,221,.2);overflow:hidden;position:relative;}
@@ -33,7 +32,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 /* ── STAGE ── */
 #stage{position:fixed;inset:0;z-index:0;background:transparent;will-change:transform;}
 #stage canvas{width:100%!important;height:100%!important;display:block;}
-
 
 #lvo-logo-overlay{
   position:fixed;inset:0;z-index:20;
@@ -68,14 +66,16 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #screen-page-nav li.is-current a{opacity:1;}
 #screen-page-nav li:hover a{opacity:0.7;}
 
-/* LVO slide (idx 0) — large centered logo text hidden since we show the GIF */
+/* LVO slide (idx 1) */
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
 #screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
 #screen-page-nav li.lvo-about .about-inner .lvo-sub{font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;color:var(--dimmer);display:block;margin-top:10px;}
 
-/* ── PROGRESS BAR ── */
-#progress-indicator{position:fixed;top:0;left:0;z-index:40;height:1px;background:var(--white);width:100%;transform-origin:left center;transform:scaleX(0);}
+/* About slide (idx 0) — symbol controller item */
+.controller-item.is-symbol .numerator{font-size:clamp(11px,2vw,15px);letter-spacing:0;padding-bottom:6px;}
+.controller-item.is-symbol.is-current .numerator{color:var(--white);}
+.controller-item.is-symbol .numerator{color:var(--dimmer);}
 
 /* ── BOTTOM CONTROLLER ── */
 #screen-controller{position:fixed;bottom:0;left:50%;z-index:30;transform:translateX(-50%);padding-bottom:clamp(12px,3vw,20px);pointer-events:all;}
@@ -98,8 +98,69 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   #stage{transform:none!important;will-change:auto;}
   #title a span:first-child{display:none;}
   #title a::before{content:'LVO';font-family:'Cinzel',serif;font-size:13px;letter-spacing:.3em;color:var(--white);}
-  /* Reduce water effect on mobile for better performance */
   #stage canvas{opacity:0.95;}
+}
+
+/* ── ABOUT TEXT OVERLAY ── */
+#about-text{
+  position:fixed;
+  top:50%;
+  right:clamp(40px,7vw,120px);
+  transform:translateY(-50%);
+  z-index:30;
+  max-width:clamp(200px,28vw,380px);
+  text-align:right;
+  pointer-events:none;
+  opacity:0;
+  transition:opacity 0.7s ease;
+}
+#about-text.visible{ opacity:1; }
+#about-text .about-eyebrow{
+  display:block;
+  font-family:'Cinzel',serif;
+  font-size:clamp(7px,1vw,10px);
+  letter-spacing:.5em;
+  color:var(--purple);
+  text-transform:uppercase;
+  margin-bottom:1.2rem;
+}
+#about-text .about-rule{
+  display:block;
+  width:100%;
+  height:1px;
+  background:linear-gradient(to left,rgba(127,119,221,0.6),transparent);
+  margin-bottom:1.4rem;
+}
+#about-text .about-body{
+  font-family:'IM Fell English',Georgia,serif;
+  font-style:italic;
+  font-size:clamp(13px,1.5vw,18px);
+  line-height:1.75;
+  color:rgba(255,255,255,0.82);
+  display:block;
+  margin-bottom:1.6rem;
+}
+#about-text .about-sub{
+  font-family:'Cormorant SC',serif;
+  font-size:clamp(7px,0.9vw,10px);
+  letter-spacing:.4em;
+  color:rgba(255,255,255,0.35);
+  text-transform:uppercase;
+  display:block;
+  line-height:2;
+}
+@media(max-width:768px){
+  #about-text{
+    right:auto;
+    left:50%;
+    transform:translate(-50%,-50%);
+    text-align:center;
+    max-width:80vw;
+    top:72%;
+  }
+  #about-text .about-rule{
+    background:linear-gradient(to right,transparent,rgba(127,119,221,0.6),transparent);
+  }
 }
 
 /* ── VIDEO BACKGROUND ── */
@@ -112,13 +173,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   pointer-events:none;
 }
 #video-bg.visible{ opacity:1; }
-/* Stage sits above video only when NOT in video mode */
 #stage{ z-index:10; background:#000; }
 #stage.video-mode{
   z-index:4;
   background:transparent;
 }
-/* On video slides, hide the shader canvas */
 #stage.video-mode canvas{
   opacity:0;
 }
@@ -129,7 +188,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 <!-- ── LOADING SCREEN ── -->
 <div id="loading-screen">
   <div class="ls-rule"></div>
-  <div class="ls-mark">LVO Holdings</div>
   <div class="ls-name">LVO</div>
   <div class="ls-sub">Legion V. Omni-Operations</div>
   <div class="ls-bar"><div class="ls-bar-fill"></div></div>
@@ -139,35 +197,49 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 <div id="site-wrap">
 
   <div id="stage"><canvas></canvas></div>
-  <!-- Shared video background for LVO + Connect slides -->
   <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" autoplay loop muted playsinline preload="auto"></video>
 
-<div id="title">
+  <div id="title">
     <a href="https://wearelvo.com/" id="title-link">
       <span style="letter-spacing:0.3em;">Legion V. Omni-Operations</span>
       <span id="title-indicator"></span>
     </a>
   </div>
 
-  <span id="progress-indicator"></span>
-
-  <div id="stage-nav">
+  <!-- ── ABOUT TEXT OVERLAY (Slide 0) ── -->
+  <!-- Edit the text below freely — eyebrow, body paragraphs, and sub-lines -->
+  <div id="about-text">
+    <span class="about-eyebrow">Legion V. Omni-Operations</span>
+    <span class="about-rule"></span>
+    <span class="about-body">
+      We are a holding company built at the intersection of legacy and forward motion —
+      cultivating ventures that endure.
+    </span>
+    <span class="about-sub">
+      Est. MMXXIV &nbsp;·&nbsp; Houston, TX<br>
+      Omnia vincit labor
+    </span>
+  </div>
     <ul id="screen-page-nav">
-      <!-- Slide 0: LVO -->
-      <li class="lvo-about" data-idx="0" data-href="">
+      <!-- Slide 0: About -->
+      <li class="about-slide" data-idx="0" data-href="">
+        <div class="about-inner" style="text-align:center;opacity:0.85;"></div>
+      </li>
+      <!-- Slide 1: LVO -->
+      <li class="lvo-about" data-idx="1" data-href="">
         <div class="about-inner">
           <span class="lvo-big">𝐋𝐕𝐎</span>
           <span class="lvo-sub">LEGION V. OMNI-OPERATIONS</span>
         </div>
       </li>
-      <!-- Slide 1: Connect -->
-      <li data-idx="1" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
-      <!-- Slide 2: Vindex -->
-      <li data-idx="2" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
-      <!-- Slide 3: Alliance -->
-      <li data-idx="3" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
-      <!-- Slide 4: Operations -->
-      <li data-idx="4" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
+      <!-- Slide 2: Connect -->
+      <li data-idx="2" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
+      <!-- Slide 3: Vindex -->
+      <li data-idx="3" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <!-- Slide 4: Alliance -->
+      <li data-idx="4" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <!-- Slide 5: Operations -->
+      <li data-idx="5" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
     </ul>
   </div>
 
@@ -175,14 +247,15 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     <div class="inner">
       <div id="knob">
         <span class="separator"></span>
-        <span class="denominator">5</span>
+        <span class="denominator">6</span>
       </div>
       <ul class="nav-group" id="controller-parent">
-        <li class="nav-list controller-item is-current" data-idx="0"><span class="numerator">1</span></li>
-        <li class="nav-list controller-item" data-idx="1"><span class="numerator">2</span></li>
-        <li class="nav-list controller-item" data-idx="2"><span class="numerator">3</span></li>
-        <li class="nav-list controller-item" data-idx="3"><span class="numerator">4</span></li>
-        <li class="nav-list controller-item" data-idx="4"><span class="numerator">5</span></li>
+        <li class="nav-list controller-item is-symbol is-current" data-idx="0"><span class="numerator">ᛪ༙</span></li>
+        <li class="nav-list controller-item" data-idx="1"><span class="numerator">1</span></li>
+        <li class="nav-list controller-item" data-idx="2"><span class="numerator">2</span></li>
+        <li class="nav-list controller-item" data-idx="3"><span class="numerator">3</span></li>
+        <li class="nav-list controller-item" data-idx="4"><span class="numerator">4</span></li>
+        <li class="nav-list controller-item" data-idx="5"><span class="numerator">5</span></li>
       </ul>
     </div>
   </div>
@@ -201,10 +274,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 const isMobileDevice = window.innerWidth <= 768;
 const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
 
-// Adjust water intensity based on device
-let WATER_INTENSITY = 0.028; // default desktop
+let WATER_INTENSITY = 0.028;
 if (isMobileDevice) {
-  WATER_INTENSITY = 0.015; // less intense on mobile for better performance
+  WATER_INTENSITY = 0.015;
 } else if (isTablet) {
   WATER_INTENSITY = 0.022;
 }
@@ -220,49 +292,23 @@ function dismissLoader(){
 }
 setTimeout(dismissLoader, 2400);
 
-// ─── SLIDES WITH MOBILE SUPPORT ────────────────────────────────────────────
+// ─── SLIDES ────────────────────────────────────────────────────────────────
 const ASSETS = 'https://assets.wearelvo.com/';
 
-// Helper function to get the correct image URL based on device
 function getImageUrl(desktopImg, mobileImg) {
   return isMobileDevice ? mobileImg : desktopImg;
 }
 
-// FIX: Mobile image filenames use spaces (encoded as %20) and uppercase .JPG
-// to match the exact filenames in the R2 bucket.
 const SLIDES = [
-  { 
-    label:'LVO', 
-    img: ASSETS + 'LVO.jpg',
-    mobile_img: ASSETS + 'LVO%20Mobile.JPG'
-  },
-  { 
-    label:'Connect', 
-    img: ASSETS + 'LVO.jpg',
-    mobile_img: ASSETS + 'LVO%20Mobile.JPG'
-  },
-  { 
-    label:'Vindex', 
-    img: ASSETS + 'Vindex.jpg',
-    mobile_img: ASSETS + 'Vindex%20Mobile.JPG'
-  },
-  { 
-    label:'Alliance', 
-    img: ASSETS + 'Alliance.JPG',
-    mobile_img: ASSETS + 'Alliance%20Mobile.JPG'
-  },
-  { 
-    label:'Operations', 
-    img: ASSETS + 'Operations.jpg',
-    mobile_img: ASSETS + 'Operations%20Mobile.JPG'
-  },
+  { label:'About',      img: 'LVO_R.jpg',              mobile_img: 'LVO_R.jpg' },
+  { label:'LVO',        img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
+  { label:'Connect',    img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
+  { label:'Vindex',     img: ASSETS+'Vindex.jpg',     mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
+  { label:'Alliance',   img: ASSETS+'Alliance.JPG',   mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
+  { label:'Operations', img: ASSETS+'Operations.jpg', mobile_img: ASSETS+'Operations%20Mobile.JPG' },
 ];
 const TOTAL = SLIDES.length;
 
-// Slides that use the red/black gradient (indices)
-const GRADIENT_SLIDES = new Set([]);
-
-// No slides use the video background anymore
 const VIDEO_SLIDES = new Set([]);
 const videoBg  = document.getElementById('video-bg');
 const stageCanvas = document.querySelector('#stage');
@@ -277,7 +323,6 @@ function updateVideoBackground(idx){
   }
 }
 updateVideoBackground(0);
-
 
 // ─── THREE.JS ─────────────────────────────────────────────────────────────
 const canvas = document.querySelector('#stage canvas');
@@ -302,36 +347,12 @@ uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
 uniform int uHasTexB;
-uniform int uGradA;
-uniform int uGradB;
 uniform float uWaterIntensity;
 varying vec2 vUv;
 
 float wave(vec2 p, float freq, float phase){
   return sin(p.x * freq + uTime * 0.3 + phase)
        * cos(p.y * freq * 0.8 + uTime * 0.2 + phase * 1.3);
-}
-
-// Deep red-black gradient for LVO/Connect slides
-vec3 redBlackGradient(vec2 uv, float t){
-  vec2 center = uv - 0.5;
-  float r = length(center);
-
-  float w1 = wave(uv, 2.1, 0.0) * 0.5 + 0.5;
-  float w2 = wave(uv * 1.4, 3.3, 1.8) * 0.5 + 0.5;
-
-  vec3 darkCore  = vec3(0.02, 0.00, 0.01);
-  vec3 deepRed   = vec3(0.38, 0.00, 0.03);
-  vec3 bloodRed  = vec3(0.55, 0.02, 0.06);
-
-  float radial = smoothstep(0.0, 0.72, r);
-  vec3 col = mix(darkCore, deepRed, radial);
-  col = mix(col, bloodRed, w1 * 0.18 + w2 * 0.10);
-
-  float vein = pow(max(0.0, wave(uv * 2.5, 1.2, t * 0.4)), 4.0);
-  col += vec3(0.25, 0.0, 0.0) * vein * 0.3;
-
-  return col;
 }
 
 void main(){
@@ -349,17 +370,13 @@ void main(){
 
   vec3 colA, colB;
 
-  if(uGradA == 1){
-    colA = redBlackGradient(wuv, uTime);
-  } else if(uHasTexA == 1){
+  if(uHasTexA == 1){
     colA = texture2D(uTexA, wuv).rgb * 0.82;
   } else {
     colA = vec3(0.04, 0.02, 0.12);
   }
 
-  if(uGradB == 1){
-    colB = redBlackGradient(wuv, uTime);
-  } else if(uHasTexB == 1){
+  if(uHasTexB == 1){
     colB = texture2D(uTexB, wuv).rgb * 0.82;
   } else {
     colB = vec3(0.04, 0.02, 0.12);
@@ -392,7 +409,6 @@ const textures = new Array(TOTAL).fill(null);
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = 'anonymous';
 
-// FIX: Now correctly calls getImageUrl() to pick mobile vs desktop image
 SLIDES.forEach((s,i)=>{
   const imgUrl = getImageUrl(s.img, s.mobile_img);
   if(!imgUrl) return;
@@ -416,8 +432,6 @@ const uniforms = {
   uTexB:           {value:placeholder},
   uHasTexA:        {value:0},
   uHasTexB:        {value:0},
-  uGradA:          {value:0},
-  uGradB:          {value:0},
   uWaterIntensity: {value:WATER_INTENSITY},
 };
 
@@ -426,7 +440,6 @@ scene.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({vertexShader:vertSrc,fra
 function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
 window.addEventListener('resize', resize);
-
 
 // ─── NAV ──────────────────────────────────────────────────────────────────
 let current=0, transitioning=false, transitionStart=0;
@@ -444,6 +457,14 @@ function layoutNav(){
 }
 layoutNav();
 window.addEventListener('resize',layoutNav);
+
+const aboutText = document.getElementById('about-text');
+function updateAboutText(idx){
+  if(idx === 0) aboutText.classList.add('visible');
+  else aboutText.classList.remove('visible');
+}
+// Show on load if starting at 0
+updateAboutText(0);
 
 function updateNav(idx){
   const sw = parseFloat(navUl.dataset.sw) || window.innerWidth * 0.5;
@@ -464,16 +485,13 @@ function goTo(idx){
   transitioning=true;
   const prev=current; current=idx;
   const tA=textures[idx], tB=textures[prev];
-  const isGradA = GRADIENT_SLIDES.has(idx) ? 1 : 0;
-  const isGradB = GRADIENT_SLIDES.has(prev) ? 1 : 0;
-  uniforms.uGradA.value = isGradA;
-  uniforms.uGradB.value = isGradB;
-  uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=(tB&&!isGradB)?1:0;
-  uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=(tA&&!isGradA)?1:0;
+  uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
+  uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
   updateVideoBackground(idx);
+  updateAboutText(idx);
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
 
@@ -538,17 +556,15 @@ if(!isTouchDevice){
 })();
 
 // ─── AUTO-ADVANCE ─────────────────────────────────────────────────────────
-const progressBar=document.getElementById('progress-indicator');
 const AUTO_INTERVAL=12000;
 let progressStart=0, autoRunning=false;
 function resetProgress(){ progressStart=performance.now(); }
 function startAutoAdvance(){
   if(autoRunning) return; autoRunning=true; progressStart=performance.now();
-  (function tickProgress(ts){
-    requestAnimationFrame(tickProgress);
+  (function tick(ts){
+    requestAnimationFrame(tick);
     if(!autoRunning) return;
     const frac=Math.min((ts-progressStart)/AUTO_INTERVAL,1);
-    progressBar.style.transform=`scaleX(${frac})`;
     if(frac>=1){ progressStart=ts; goTo((current+1)%TOTAL); }
   })();
 }
