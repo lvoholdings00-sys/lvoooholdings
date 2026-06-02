@@ -115,10 +115,22 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   transition:opacity 0.7s ease;
 }
 #about-text.visible{ opacity:1; }
+#about-text .about-lvo{
+  display:block;
+  font-family:'Cinzel',serif;
+  font-weight:900;
+  font-size:clamp(42px,6vw,88px);
+  letter-spacing:.18em;
+  color:#fff;
+  line-height:1;
+  margin-bottom:1.4rem;
+  text-shadow:0 2px 40px rgba(0,0,0,0.8);
+}
 #about-text .about-eyebrow{
   display:block;
   font-family:'Cinzel',serif;
-  font-size:clamp(7px,1vw,10px);
+  font-size:clamp(8px,1vw,11px);
+  font-weight:600;
   letter-spacing:.5em;
   color:var(--purple);
   text-transform:uppercase;
@@ -134,20 +146,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #about-text .about-body{
   font-family:'IM Fell English',Georgia,serif;
   font-style:italic;
-  font-size:clamp(13px,1.5vw,18px);
+  font-size:clamp(14px,1.6vw,20px);
+  font-weight:700;
   line-height:1.75;
-  color:rgba(255,255,255,0.82);
+  color:rgba(255,255,255,0.95);
   display:block;
   margin-bottom:1.6rem;
+  text-shadow:0 1px 12px rgba(0,0,0,0.9),0 0 4px rgba(0,0,0,0.7);
 }
 #about-text .about-sub{
   font-family:'Cormorant SC',serif;
-  font-size:clamp(7px,0.9vw,10px);
+  font-size:clamp(8px,0.95vw,11px);
+  font-weight:500;
   letter-spacing:.4em;
-  color:rgba(255,255,255,0.35);
+  color:rgba(255,255,255,0.6);
   text-transform:uppercase;
   display:block;
   line-height:2;
+  text-shadow:0 1px 8px rgba(0,0,0,0.8);
 }
 @media(max-width:768px){
   #about-text{
@@ -208,6 +224,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   <!-- ── ABOUT TEXT OVERLAY (Slide 0 only) ── -->
   <!-- Edit the text below freely — eyebrow, body paragraphs, and sub-lines -->
   <div id="about-text">
+    <span class="about-lvo">𝐋𝐕𝐎</span>
     <span class="about-eyebrow">Legion V. Omni-Operations</span>
     <span class="about-rule"></span>
     <span class="about-body">
@@ -226,21 +243,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <li class="about-slide" data-idx="0" data-href="">
         <div class="about-inner" style="text-align:center;opacity:0.85;"></div>
       </li>
-      <!-- Slide 1: LVO -->
-      <li class="lvo-about" data-idx="1" data-href="">
-        <div class="about-inner">
-          <span class="lvo-big">𝐋𝐕𝐎</span>
-          <span class="lvo-sub">LEGION V. OMNI-OPERATIONS</span>
-        </div>
-      </li>
-      <!-- Slide 2: Connect -->
-      <li data-idx="2" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
-      <!-- Slide 3: Vindex -->
-      <li data-idx="3" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
-      <!-- Slide 4: Alliance -->
-      <li data-idx="4" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
-      <!-- Slide 5: Operations -->
-      <li data-idx="5" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
+      <!-- Slide 1: Connect -->
+      <li data-idx="1" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
+      <!-- Slide 2: Vindex -->
+      <li data-idx="2" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <!-- Slide 3: Alliance -->
+      <li data-idx="3" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <!-- Slide 4: Operations -->
+      <li data-idx="4" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
     </ul>
   </div>
 
@@ -248,7 +258,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     <div class="inner">
       <div id="knob">
         <span class="separator"></span>
-        <span class="denominator">6</span>
+        <span class="denominator">5</span>
       </div>
       <ul class="nav-group" id="controller-parent">
         <li class="nav-list controller-item is-symbol is-current" data-idx="0"><span class="numerator">ᛪ༙</span></li>
@@ -256,7 +266,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
         <li class="nav-list controller-item" data-idx="2"><span class="numerator">2</span></li>
         <li class="nav-list controller-item" data-idx="3"><span class="numerator">3</span></li>
         <li class="nav-list controller-item" data-idx="4"><span class="numerator">4</span></li>
-        <li class="nav-list controller-item" data-idx="5"><span class="numerator">5</span></li>
       </ul>
     </div>
   </div>
@@ -301,12 +310,11 @@ function getImageUrl(desktopImg, mobileImg) {
 }
 
 const SLIDES = [
-  { label:'About',      img: ASSETS+'LVO%20R.jpg',        mobile_img: ASSETS+'LVO%20R.jpg' },
-  { label:'LVO',        img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
-  { label:'Connect',    img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
-  { label:'Vindex',     img: ASSETS+'Vindex.jpg',     mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
-  { label:'Alliance',   img: ASSETS+'Alliance.JPG',   mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
-  { label:'Operations', img: ASSETS+'Operations.jpg', mobile_img: ASSETS+'Operations%20Mobile.JPG' },
+  { label:'About',      img: ASSETS+'LVO%20R.jpg',      mobile_img: ASSETS+'LVO%20R.jpg' },
+  { label:'Connect',    img: ASSETS+'LVO.jpg',          mobile_img: ASSETS+'LVO%20Mobile.JPG' },
+  { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
+  { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
+  { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG' },
 ];
 const TOTAL = SLIDES.length;
 
