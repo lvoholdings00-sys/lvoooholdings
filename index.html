@@ -67,10 +67,70 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #screen-page-nav li:hover a{opacity:0.7;}
 
 @media(max-width:768px){
-  #stage-nav{top:62%;transform:translateY(-50%);}
+  /* About slide: LVO + button sit at same vertical as Connect label */
+  #about-text{
+    left:50%;
+    transform:translateX(-50%);
+    text-align:center;
+    bottom:auto;
+    top:62%;
+    transform:translate(-50%,-50%);
+  }
+  #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
+
+  /* Vindex / Alliance / Operations: push label + button lower */
+  #screen-page-nav li.has-mobile-btn{
+    flex-direction:column;
+    gap:16px;
+    align-items:center;
+    justify-content:flex-end;
+    padding-bottom:22vh;
+  }
+  /* Hide the main nav link text on mobile for has-mobile-btn slides — button replaces it */
+  #screen-page-nav li.has-mobile-btn > a:first-of-type{
+    display:none;
+  }
+
+  /* Mobile slide button — matches about-btn style */
+  .slide-mobile-btn{
+    display:inline-flex;
+    align-items:center;
+    gap:14px;
+    text-decoration:none;
+    border:0.5px solid rgba(255,255,255,0.35);
+    padding:12px 28px;
+    font-family:'Cinzel',serif;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:.45em;
+    color:rgba(255,255,255,0.85);
+    text-transform:uppercase;
+    background:rgba(0,0,0,0.28);
+    backdrop-filter:blur(6px);
+    white-space:nowrap;
+    pointer-events:all;
+    opacity:0.3;
+    transition:border-color 0.3s,color 0.3s,background 0.3s,opacity 0.4s;
+  }
+  li.is-current .slide-mobile-btn{ opacity:1; }
+  .slide-mobile-btn:active{
+    border-color:var(--purple);
+    color:#fff;
+    background:rgba(127,119,221,0.12);
+  }
 }
 
-/* LVO slide (idx 1) */
+/* Hide mobile buttons entirely on desktop */
+@media(min-width:769px){
+  .slide-mobile-btn{ display:none !important; }
+}
+
+@media(max-width:768px){
+  #stage-nav{ top:0; transform:none; height:100%; }
+  #screen-page-nav li{ height:100vh; min-height:100vh; }
+  /* Connect sits at 62% like before */
+  #screen-page-nav li:not(.has-mobile-btn):not(.about-slide){ align-items:center; padding-top:24vh; }
+}
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
 #screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
@@ -233,11 +293,20 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <!-- Slide 1: Connect -->
       <li data-idx="1" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
       <!-- Slide 2: Vindex -->
-      <li data-idx="2" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <li data-idx="2" data-href="https://vindex.wearelvo.com/" class="has-mobile-btn">
+        <a href="https://vindex.wearelvo.com/">Vindex</a>
+        <a class="slide-mobile-btn" href="https://vindex.wearelvo.com/">Vindex <span class="about-btn-rule"></span></a>
+      </li>
       <!-- Slide 3: Alliance -->
-      <li data-idx="3" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <li data-idx="3" data-href="https://alliance.wearelvo.com/" class="has-mobile-btn">
+        <a href="https://alliance.wearelvo.com/">Alliance</a>
+        <a class="slide-mobile-btn" href="https://alliance.wearelvo.com/">Alliance <span class="about-btn-rule"></span></a>
+      </li>
       <!-- Slide 4: Operations -->
-      <li data-idx="4" data-href="https://ops.wearelvo.com/"><a href="https://ops.wearelvo.com/">Operations</a></li>
+      <li data-idx="4" data-href="https://ops.wearelvo.com/" class="has-mobile-btn">
+        <a href="https://ops.wearelvo.com/">Operations</a>
+        <a class="slide-mobile-btn" href="https://ops.wearelvo.com/">Operations <span class="about-btn-rule"></span></a>
+      </li>
     </ul>
   </div>
 
