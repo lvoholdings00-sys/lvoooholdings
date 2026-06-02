@@ -31,7 +31,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #site-wrap.visible{opacity:1;}
 
 /* ── STAGE ── */
-#stage{position:fixed;inset:0;z-index:0;background:#000;will-change:transform;}
+#stage{position:fixed;inset:0;z-index:0;background:transparent;will-change:transform;}
 #stage canvas{width:100%!important;height:100%!important;display:block;}
 
 
@@ -102,7 +102,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 /* ── VIDEO BACKGROUND ── */
 #video-bg{
-  position:fixed;inset:0;z-index:1;
+  position:fixed;inset:0;z-index:5;
   width:100%;height:100%;
   object-fit:cover;
   opacity:0;
@@ -110,8 +110,13 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   pointer-events:none;
 }
 #video-bg.visible{ opacity:1; }
-#stage{ z-index:2; }
-/* On video slides, hide the shader canvas so video shows through cleanly */
+/* Stage sits above video only when NOT in video mode */
+#stage{ z-index:10; background:#000; }
+#stage.video-mode{
+  z-index:4;
+  background:transparent;
+}
+/* On video slides, hide the shader canvas */
 #stage.video-mode canvas{
   opacity:0;
 }
