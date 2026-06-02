@@ -221,7 +221,6 @@ function dismissLoader(){
 setTimeout(dismissLoader, 2400);
 
 // ─── SLIDES WITH MOBILE SUPPORT ────────────────────────────────────────────
-// Define both desktop and mobile image URLs
 const ASSETS = 'https://assets.wearelvo.com/';
 
 // Helper function to get the correct image URL based on device
@@ -229,31 +228,33 @@ function getImageUrl(desktopImg, mobileImg) {
   return isMobileDevice ? mobileImg : desktopImg;
 }
 
+// FIX: Mobile image filenames use spaces (encoded as %20) and uppercase .JPG
+// to match the exact filenames in the R2 bucket.
 const SLIDES = [
   { 
     label:'LVO', 
     img: ASSETS + 'LVO.jpg',
-    mobile_img: ASSETS + 'LVO_Mobile.jpg'
+    mobile_img: ASSETS + 'LVO%20Mobile.JPG'
   },
   { 
     label:'Connect', 
     img: ASSETS + 'LVO.jpg',
-    mobile_img: ASSETS + 'LVO_Mobile.jpg'
+    mobile_img: ASSETS + 'LVO%20Mobile.JPG'
   },
   { 
     label:'Vindex', 
     img: ASSETS + 'Vindex.jpg',
-    mobile_img: ASSETS + 'Vindex_Mobile.jpg'
+    mobile_img: ASSETS + 'Vindex%20Mobile.JPG'
   },
   { 
     label:'Alliance', 
     img: ASSETS + 'Alliance.JPG',
-    mobile_img: ASSETS + 'Alliance_Mobile.JPG'
+    mobile_img: ASSETS + 'Alliance%20Mobile.JPG'
   },
   { 
     label:'Operations', 
     img: ASSETS + 'Operations.jpg',
-    mobile_img: ASSETS + 'Operations_Mobile.jpg'
+    mobile_img: ASSETS + 'Operations%20Mobile.JPG'
   },
 ];
 const TOTAL = SLIDES.length;
@@ -391,7 +392,7 @@ const textures = new Array(TOTAL).fill(null);
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = 'anonymous';
 
-// Load appropriate images based on device type
+// FIX: Now correctly calls getImageUrl() to pick mobile vs desktop image
 SLIDES.forEach((s,i)=>{
   const imgUrl = getImageUrl(s.img, s.mobile_img);
   if(!imgUrl) return;
