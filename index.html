@@ -111,10 +111,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 }
 #video-bg.visible{ opacity:1; }
 #stage{ z-index:2; }
-/* On video slides, blend the shader canvas so video shows through */
+/* On video slides, hide the shader canvas so video shows through cleanly */
 #stage.video-mode canvas{
-  mix-blend-mode:screen;
-  opacity:0.35;
+  opacity:0;
 }
 </style>
 </head>
