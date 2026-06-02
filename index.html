@@ -212,11 +212,10 @@ setTimeout(dismissLoader, 2400);
 
 // ─── SLIDES ───────────────────────────────────────────────────────────────
 // Slide order: 0=LVO, 1=Connect, 2=Vindex, 3=Alliance, 4=Operations
-// Slides 0 and 1 have no img — they use the red/black gradient shader
 const ASSETS = 'https://assets.wearelvo.com/';
 const SLIDES = [
-    { label:'LVO',        img: null },  // video will replace
-    { label:'Connect',    img: null },  // video will replace
+  { label:'LVO',        img: ASSETS + 'LVO.jpg' },
+  { label:'Connect',    img: ASSETS + 'LVO.jpg' },
   { label:'Vindex',     img: ASSETS + 'Vindex.jpg'     },
   { label:'Alliance',   img: ASSETS + 'Alliance.JPG'   },
   { label:'Operations', img: ASSETS + 'Operations.jpg' },
@@ -226,8 +225,8 @@ const TOTAL = SLIDES.length;
 // Slides that use the red/black gradient (indices)
 const GRADIENT_SLIDES = new Set([]);
 
-// Slides that use the video background (LVO=0, Connect=1)
-const VIDEO_SLIDES = new Set([0, 1]);
+// No slides use the video background anymore
+const VIDEO_SLIDES = new Set([]);
 const videoBg  = document.getElementById('video-bg');
 const stageCanvas = document.querySelector('#stage');
 
@@ -278,15 +277,12 @@ float wave(vec2 p, float freq, float phase){
 
 // Deep red-black gradient for LVO/Connect slides
 vec3 redBlackGradient(vec2 uv, float t){
-  // Radial dark center, blood-red edges with subtle vein-like variation
   vec2 center = uv - 0.5;
   float r = length(center);
 
-  // Layered wave for organic feel
   float w1 = wave(uv, 2.1, 0.0) * 0.5 + 0.5;
   float w2 = wave(uv * 1.4, 3.3, 1.8) * 0.5 + 0.5;
 
-  // Deep black core fading to dark crimson at edges
   vec3 darkCore  = vec3(0.02, 0.00, 0.01);
   vec3 deepRed   = vec3(0.38, 0.00, 0.03);
   vec3 bloodRed  = vec3(0.55, 0.02, 0.06);
@@ -295,7 +291,6 @@ vec3 redBlackGradient(vec2 uv, float t){
   vec3 col = mix(darkCore, deepRed, radial);
   col = mix(col, bloodRed, w1 * 0.18 + w2 * 0.10);
 
-  // Subtle moving highlight veins
   float vein = pow(max(0.0, wave(uv * 2.5, 1.2, t * 0.4)), 4.0);
   col += vec3(0.25, 0.0, 0.0) * vein * 0.3;
 
@@ -382,7 +377,7 @@ const uniforms = {
   uTexB:           {value:placeholder},
   uHasTexA:        {value:0},
   uHasTexB:        {value:0},
-  uGradA:          {value:0},  // slide 0 uses image
+  uGradA:          {value:0},
   uGradB:          {value:0},
   uWaterIntensity: {value:WATER_INTENSITY},
 };
