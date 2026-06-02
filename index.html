@@ -206,7 +206,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     </a>
   </div>
 
-  <!-- ── ABOUT TEXT OVERLAY (Slide 0) ── -->
+  <!-- ── ABOUT TEXT OVERLAY (Slide 0 only) ── -->
   <!-- Edit the text below freely — eyebrow, body paragraphs, and sub-lines -->
   <div id="about-text">
     <span class="about-eyebrow">Legion V. Omni-Operations</span>
@@ -220,6 +220,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       Omnia vincit labor
     </span>
   </div>
+
+  <div id="stage-nav">
     <ul id="screen-page-nav">
       <!-- Slide 0: About -->
       <li class="about-slide" data-idx="0" data-href="">
@@ -300,7 +302,7 @@ function getImageUrl(desktopImg, mobileImg) {
 }
 
 const SLIDES = [
-  { label:'About',      img: 'LVO_R.jpg',              mobile_img: 'LVO_R.jpg' },
+  { label:'About',      img: ASSETS+'LVO%20R.jpg',        mobile_img: ASSETS+'LVO%20R.jpg' },
   { label:'LVO',        img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
   { label:'Connect',    img: ASSETS+'LVO.jpg',        mobile_img: ASSETS+'LVO%20Mobile.JPG' },
   { label:'Vindex',     img: ASSETS+'Vindex.jpg',     mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
