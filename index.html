@@ -125,10 +125,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     margin-top:22vh;
   }
 
-  #stage-nav{ top:62%; bottom:auto; transform:translateY(-50%); height:auto; }
+  #stage-nav{ top:62%; bottom:auto; transform:translateY(-50%); height:auto; overflow:visible; }
   #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; align-items:center; justify-content:center; }
 
   #screen-page-nav li[data-idx="1"]{ align-items:center; justify-content:center; }
+  #screen-page-nav li[data-idx="0"]{ pointer-events:none; }
 }
 
 @media(min-width:769px){
