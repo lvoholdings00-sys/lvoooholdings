@@ -68,7 +68,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 /* ── MOBILE ── */
 @media(max-width:768px){
-  /* About slide overlay: centered */
   #about-text{
     left:0;
     right:0;
@@ -81,7 +80,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 
-  /* All slides with mobile buttons: center content vertically (same as Connect) */
   #screen-page-nav li.has-mobile-btn{
     flex-direction:column;
     gap:16px;
@@ -89,12 +87,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     justify-content:center;
   }
 
-  /* Hide the large italic nav link on mobile for has-mobile-btn slides — button replaces it */
   #screen-page-nav li.has-mobile-btn > a:first-of-type{
     display:none;
   }
 
-  /* Mobile slide button */
   .slide-mobile-btn{
     display:inline-flex;
     align-items:center;
@@ -118,15 +114,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   }
   li.is-current .slide-mobile-btn{ color:rgba(255,255,255,1); }
 
-  /* Stage-nav: keep original fixed positioning */
   #stage-nav{ top:50%; transform:translateY(-50%); height:auto; }
   #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; }
 
-  /* Connect slide: standard centering */
   #screen-page-nav li[data-idx="1"]{ align-items:center; justify-content:center; }
 }
 
-/* Hide mobile buttons on desktop */
 @media(min-width:769px){
   .slide-mobile-btn{ display:none !important; }
 }
@@ -136,7 +129,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
 #screen-page-nav li.lvo-about .about-inner .lvo-sub{font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;color:var(--dimmer);display:block;margin-top:10px;}
 
-/* About slide (idx 0) — symbol controller item */
 .controller-item.is-symbol .numerator{font-size:clamp(11px,2vw,15px);letter-spacing:0;padding-bottom:6px;}
 .controller-item.is-symbol.is-current .numerator{color:var(--white);}
 .controller-item.is-symbol .numerator{color:var(--dimmer);}
@@ -168,7 +160,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 /* ── ABOUT BUTTON OVERLAY ── */
 #about-text{
   position:fixed;
-  bottom:clamp(120px,22vh,200px);
+  bottom:clamp(80px,12vh,130px);
   left:clamp(40px,7vw,120px);
   z-index:30;
   pointer-events:all;
@@ -176,15 +168,28 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   transition:opacity 0.7s ease;
 }
 #about-text.visible{ opacity:1; }
+
+/* ── DESKTOP: vertically center on left ── */
+@media(min-width:769px){
+  #about-text{
+    bottom:auto;
+    top:50%;
+    transform:translateY(-50%);
+  }
+  #about-text.visible{
+    transform:translateY(-50%);
+  }
+}
+
 #about-text .about-lvo{
   display:block;
   font-family:'Cinzel',serif;
   font-weight:900;
-  font-size:clamp(42px,6vw,88px);
+  font-size:clamp(32px,4.5vw,64px);
   letter-spacing:.18em;
   color:#fff;
   line-height:1;
-  margin-bottom:1.6rem;
+  margin-bottom:1rem;
   text-shadow:0 2px 40px rgba(0,0,0,0.9);
   pointer-events:none;
 }
@@ -549,7 +554,6 @@ function goTo(idx){
 // ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
-// Nav click (desktop drag vs tap)
 let navDragMoved=false, navDragStartX=0;
 navUl.addEventListener('pointerdown', e=>{ navDragStartX=e.clientX; navDragMoved=false; });
 navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-navDragStartX)>8) navDragMoved=true; });
@@ -575,16 +579,13 @@ window.addEventListener('wheel',e=>{
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
-// ─── TOUCH / POINTER SWIPE (stage + full window for mobile) ──────────────
 let stageDragX=0, stageDragging=false, stageDelta=0;
 
-// Stage drag (desktop)
 document.getElementById('stage').addEventListener('pointerdown',e=>{
   stageDragging=true; stageDragX=e.clientX; stageDelta=0;
   e.preventDefault();
 },{passive:false});
 
-// Global touch swipe — covers the whole screen on mobile
 window.addEventListener('touchstart', e=>{
   stageDragging=true;
   stageDragX=e.touches[0].clientX;
@@ -603,7 +604,6 @@ window.addEventListener('touchend', ()=>{
   stageDelta=0;
 });
 
-// Pointer (mouse/pen) swipe on stage
 window.addEventListener('pointermove',e=>{ if(stageDragging && e.pointerType!=='touch') stageDelta=e.clientX-stageDragX; });
 window.addEventListener('pointerup',()=>{
   if(!stageDragging) return;
