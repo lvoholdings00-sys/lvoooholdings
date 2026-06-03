@@ -70,11 +70,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 @media(max-width:768px){
   /* About slide overlay: centered */
   #about-text{
-    left:50%;
-    transform:translateX(-50%);
-    text-align:center;
+    left:0;
+    right:0;
     bottom:auto;
     top:38%;
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
   }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 
@@ -119,8 +122,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   #stage-nav{ top:50%; transform:translateY(-50%); height:auto; }
   #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; }
 
-  /* Connect slide: standard centering, no extra offset */
-  #screen-page-nav li:not(.has-mobile-btn):not(.about-slide){ align-items:center; justify-content:center; }
+  /* Connect slide: standard centering */
+  #screen-page-nav li[data-idx="1"]{ align-items:center; justify-content:center; }
 }
 
 /* Hide mobile buttons on desktop */
