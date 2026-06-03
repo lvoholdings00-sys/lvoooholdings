@@ -72,12 +72,14 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     left:0;
     right:0;
     bottom:auto;
-    top:57%;
+    top:50%;
+    transform:translateY(-50%);
     text-align:center;
     display:flex;
     flex-direction:column;
     align-items:center;
   }
+  #about-text.visible{ transform:translateY(-50%); }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 
   #screen-page-nav li.has-mobile-btn{
@@ -114,8 +116,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   }
   li.is-current .slide-mobile-btn{ color:rgba(255,255,255,1); }
 
-  #stage-nav{ top:50%; transform:translateY(-50%); height:auto; }
-  #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; }
+  #stage-nav{ top:auto; bottom:14vh; transform:none; height:auto; }
+  #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; align-items:center; justify-content:center; }
 
   #screen-page-nav li[data-idx="1"]{ align-items:center; justify-content:center; }
 }
