@@ -66,31 +66,32 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #screen-page-nav li.is-current a{opacity:1;}
 #screen-page-nav li:hover a{opacity:0.7;}
 
+/* ── MOBILE ── */
 @media(max-width:768px){
-  /* About slide: LVO + button in the dark zone below the cross, above artifacts */
+  /* About slide overlay: centered */
   #about-text{
     left:50%;
-    transform:translate(-50%,-50%);
+    transform:translateX(-50%);
     text-align:center;
     bottom:auto;
-    top:72%;
+    top:38%;
   }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 
-  /* Vindex / Alliance / Operations: button at bottom, above artifacts */
+  /* All slides with mobile buttons: center content vertically (same as Connect) */
   #screen-page-nav li.has-mobile-btn{
     flex-direction:column;
     gap:16px;
     align-items:center;
-    justify-content:flex-end;
-    padding-bottom:22vh;
+    justify-content:center;
   }
-  /* Hide the italic nav link on mobile — button replaces it */
+
+  /* Hide the large italic nav link on mobile for has-mobile-btn slides — button replaces it */
   #screen-page-nav li.has-mobile-btn > a:first-of-type{
     display:none;
   }
 
-  /* Mobile slide button — no border, clean text-only with rule */
+  /* Mobile slide button */
   .slide-mobile-btn{
     display:inline-flex;
     align-items:center;
@@ -100,31 +101,33 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     outline:none;
     padding:10px 0;
     font-family:'Cinzel',serif;
-    font-size:11px;
-    font-weight:600;
-    letter-spacing:.45em;
-    color:rgba(255,255,255,0.85);
-    text-transform:uppercase;
+    font-size:clamp(22px,5vw,68px);
+    font-weight:400;
+    letter-spacing:.02em;
+    color:rgba(255,255,255,0.3);
+    font-family:'IM Fell English',Georgia,serif;
+    font-style:italic;
+    text-transform:none;
     background:none;
     white-space:nowrap;
     pointer-events:all;
-    opacity:0.3;
     transition:color 0.3s,opacity 0.4s;
   }
-  li.is-current .slide-mobile-btn{ opacity:1; }
+  li.is-current .slide-mobile-btn{ color:rgba(255,255,255,1); }
 
-  /* Stage-nav: keep original fixed positioning, no height override */
+  /* Stage-nav: keep original fixed positioning */
   #stage-nav{ top:50%; transform:translateY(-50%); height:auto; }
-  /* Keep li sizing normal so touch falls through to #stage drag handler */
   #screen-page-nav li{ height:auto; min-height:80px; pointer-events:all; }
-  /* Connect: nudge down slightly */
-  #screen-page-nav li:not(.has-mobile-btn):not(.about-slide){ padding-top:28vh; align-items:flex-start; }
+
+  /* Connect slide: standard centering, no extra offset */
+  #screen-page-nav li:not(.has-mobile-btn):not(.about-slide){ align-items:center; justify-content:center; }
 }
 
-/* Hide mobile buttons entirely on desktop */
+/* Hide mobile buttons on desktop */
 @media(min-width:769px){
   .slide-mobile-btn{ display:none !important; }
 }
+
 #screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
 #screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
 #screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
@@ -214,16 +217,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   transition:width 0.3s;
 }
 .about-btn:hover .about-btn-rule{ width:36px; }
-@media(max-width:768px){
-  #about-text{
-    left:50%;
-    transform:translateX(-50%);
-    text-align:center;
-    bottom:auto;
-    top:38%;
-  }
-  #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
-}
 
 /* ── VIDEO BACKGROUND ── */
 #video-bg{
@@ -269,7 +262,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   </div>
 
   <!-- ── ABOUT TEXT OVERLAY (Slide 0 only) ── -->
-  <!-- Edit the text below freely — eyebrow, body paragraphs, and sub-lines -->
   <div id="about-text">
     <span class="about-lvo">𝐋𝐕𝐎</span>
     <a class="about-btn" href="https://about.wearelvo.com/">
@@ -289,17 +281,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <!-- Slide 2: Vindex -->
       <li data-idx="2" data-href="https://vindex.wearelvo.com/" class="has-mobile-btn">
         <a href="https://vindex.wearelvo.com/">Vindex</a>
-        <a class="slide-mobile-btn" href="https://vindex.wearelvo.com/">Vindex <span class="about-btn-rule"></span></a>
+        <a class="slide-mobile-btn" href="https://vindex.wearelvo.com/">Vindex</a>
       </li>
       <!-- Slide 3: Alliance -->
       <li data-idx="3" data-href="https://alliance.wearelvo.com/" class="has-mobile-btn">
         <a href="https://alliance.wearelvo.com/">Alliance</a>
-        <a class="slide-mobile-btn" href="https://alliance.wearelvo.com/">Alliance <span class="about-btn-rule"></span></a>
+        <a class="slide-mobile-btn" href="https://alliance.wearelvo.com/">Alliance</a>
       </li>
       <!-- Slide 4: Operations -->
       <li data-idx="4" data-href="https://ops.wearelvo.com/" class="has-mobile-btn">
         <a href="https://ops.wearelvo.com/">Operations</a>
-        <a class="slide-mobile-btn" href="https://ops.wearelvo.com/">Operations <span class="about-btn-rule"></span></a>
+        <a class="slide-mobile-btn" href="https://ops.wearelvo.com/">Operations</a>
       </li>
     </ul>
   </div>
@@ -522,7 +514,6 @@ function updateAboutText(idx){
   if(idx === 0) aboutText.classList.add('visible');
   else aboutText.classList.remove('visible');
 }
-// Show on load if starting at 0
 updateAboutText(0);
 
 function updateNav(idx){
@@ -557,14 +548,15 @@ function goTo(idx){
 // ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
-let dragMoved=false, dragStartX=0;
-navUl.addEventListener('pointerdown', e=>{ dragStartX=e.clientX; dragMoved=false; });
-navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
+// Nav click (desktop drag vs tap)
+let navDragMoved=false, navDragStartX=0;
+navUl.addEventListener('pointerdown', e=>{ navDragStartX=e.clientX; navDragMoved=false; });
+navUl.addEventListener('pointermove', e=>{ if(Math.abs(e.clientX-navDragStartX)>8) navDragMoved=true; });
 navUl.addEventListener('click', e=>{
   const li=e.target.closest('li[data-idx]');
   if(!li) return;
   const idx=+li.dataset.idx, href=li.dataset.href;
-  if(dragMoved){ e.preventDefault(); goTo(idx); return; }
+  if(navDragMoved){ e.preventDefault(); goTo(idx); return; }
   if(idx===current){ if(href){ e.preventDefault(); window.location.href=href; } }
   else { e.preventDefault(); goTo(idx); }
 }, true);
@@ -582,14 +574,39 @@ window.addEventListener('wheel',e=>{
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
-window.addEventListener('pointerdown',e=>{ dragStartX=e.clientX; dragMoved=false; });
-window.addEventListener('pointermove',e=>{ if(Math.abs(e.clientX-dragStartX)>8) dragMoved=true; });
-
+// ─── TOUCH / POINTER SWIPE (stage + full window for mobile) ──────────────
 let stageDragX=0, stageDragging=false, stageDelta=0;
-document.getElementById('stage').addEventListener('pointerdown',e=>{stageDragging=true;stageDragX=e.clientX;stageDelta=0;e.preventDefault();},{passive:false});
-window.addEventListener('pointermove',e=>{ if(stageDragging) stageDelta=e.clientX-stageDragX; });
+
+// Stage drag (desktop)
+document.getElementById('stage').addEventListener('pointerdown',e=>{
+  stageDragging=true; stageDragX=e.clientX; stageDelta=0;
+  e.preventDefault();
+},{passive:false});
+
+// Global touch swipe — covers the whole screen on mobile
+window.addEventListener('touchstart', e=>{
+  stageDragging=true;
+  stageDragX=e.touches[0].clientX;
+  stageDelta=0;
+},{passive:true});
+
+window.addEventListener('touchmove', e=>{
+  if(stageDragging) stageDelta=e.touches[0].clientX - stageDragX;
+},{passive:true});
+
+window.addEventListener('touchend', ()=>{
+  if(!stageDragging) return;
+  stageDragging=false;
+  if(stageDelta < -50) goTo(current+1);
+  else if(stageDelta > 50) goTo(current-1);
+  stageDelta=0;
+});
+
+// Pointer (mouse/pen) swipe on stage
+window.addEventListener('pointermove',e=>{ if(stageDragging && e.pointerType!=='touch') stageDelta=e.clientX-stageDragX; });
 window.addEventListener('pointerup',()=>{
-  if(!stageDragging)return; stageDragging=false;
+  if(!stageDragging) return;
+  stageDragging=false;
   if(stageDelta<-50) goTo(current+1);
   else if(stageDelta>50) goTo(current-1);
   stageDelta=0;
@@ -632,6 +649,7 @@ navUl.addEventListener('click',resetProgress);
 window.addEventListener('keydown',resetProgress);
 window.addEventListener('wheel',resetProgress);
 window.addEventListener('pointerup',resetProgress);
+window.addEventListener('touchend',resetProgress);
 
 // ─── PARALLAX TILT (desktop only) ─────────────────────────────────────────
 const stageEl = document.getElementById('stage');
