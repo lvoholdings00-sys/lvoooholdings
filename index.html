@@ -8,10 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;900&family=Cormorant+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
+:root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;--red:#8B0000;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;user-select:none;}
 
-@media (pointer:coarse){ body{cursor:auto;} #waiting-cover-cursor{display:none!important;} }
+@media (pointer:coarse){ body{cursor:auto;} }
 @media (pointer:fine){ body{cursor:none;} }
 
 /* ── LOADING SCREEN ── */
@@ -86,6 +86,31 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   filter: blur(0px);
   color: rgba(255,255,255,1) !important;
 }
+
+/* ── FOCUS FRAME (red corner brackets) ── */
+#focus-frame {
+  position: fixed;
+  pointer-events: none;
+  z-index: 31;
+  transition:
+    left   0.55s cubic-bezier(0.77,0,0.175,1),
+    top    0.55s cubic-bezier(0.77,0,0.175,1),
+    width  0.55s cubic-bezier(0.77,0,0.175,1),
+    height 0.55s cubic-bezier(0.77,0,0.175,1),
+    opacity 0.4s ease;
+}
+#focus-frame .fc {
+  position: absolute;
+  width: clamp(12px,1.8vw,22px);
+  height: clamp(12px,1.8vw,22px);
+  border: 2.5px solid var(--red);
+  filter: drop-shadow(0 0 6px rgba(139,0,0,0.9)) drop-shadow(0 0 2px rgba(139,0,0,0.6));
+  border-radius: 2px;
+}
+#focus-frame .fc.tl { top:-10px; left:-10px; border-right:none; border-bottom:none; }
+#focus-frame .fc.tr { top:-10px; right:-10px; border-left:none;  border-bottom:none; }
+#focus-frame .fc.bl { bottom:-10px; left:-10px; border-right:none; border-top:none; }
+#focus-frame .fc.br { bottom:-10px; right:-10px; border-left:none;  border-top:none; }
 
 /* ── MOBILE ── */
 @media(max-width:768px){
@@ -175,11 +200,17 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
 
-/* ── CUSTOM CURSOR ── */
-#waiting-cover-cursor{position:fixed;pointer-events:none;z-index:900;width:52px;height:52px;margin-left:-26px;margin-top:-26px;}
-#waiting-cover-cursor .inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-#waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
-@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+/* ── FLUID GLASS CURSOR ── */
+#fluid-cursor{
+  position:fixed;
+  pointer-events:none;
+  z-index:9000;
+  opacity:0;
+  transition:opacity 0.3s ease;
+  /* sized by JS */
+}
+#fluid-cursor.visible{ opacity:1; }
+@media(pointer:coarse){ #fluid-cursor{display:none!important;} }
 
 @media (max-width:768px){
   #stage{inset:0;transform:none!important;will-change:auto;}
@@ -348,13 +379,18 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     </div>
   </div>
 
-  <div id="waiting-cover-cursor" style="opacity:0;left:50%;top:50%;">
-    <div class="inner">
-      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAaABoDASIAAhEBAxEB/8QAGwAAAQQDAAAAAAAAAAAAAAAABAUGBwgAAgP/xAAsEAACAgECBQIEBwAAAAAAAAABAgMEBQARBhIhQVEHExQxMoFDYWJxoeHx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKz47EYrh3hutxFxDX+Mt3gWx2PJ2UoPxZP0+B3+/RNn40zTsVhNStB2ghrIEA8dQT/Olv16VofUKWguwq06leGqB8hH7Skbfdm0wdA4Y5KWfBgetDTyOxMckQ5UlPgjsfz/AM0gOrI7I4Ksp2IPY62ru8ViOSPcOjBl28g6f09HGyTySOiczMS3TuToD7NMep3C1CxjJI24rxFYVrNR3CtdgX6JE3+bDuP63je9QvULJrXqdirOp2Mc0ZRgf2OuVaeerYSxWmkgmjPMkkbFWU+QR1B1YXiS5buejmKsW7U9iZrUZMkshZifbk7nroIOxlH4XlyORUxQxnmRG6NK3YAeNAz37Us8kpmZS7Ftgeg3Osycsst2QyyPIQxA5mJ2GhdB/9k=" alt="">
-    </div>
-  </div>
+  <!-- fluid glass cursor canvas — drawn by JS -->
+  <canvas id="fluid-cursor"></canvas>
 
 </div><!-- /site-wrap -->
+
+<!-- ── FOCUS FRAME ── -->
+<div id="focus-frame" style="opacity:0;">
+  <span class="fc tl"></span>
+  <span class="fc tr"></span>
+  <span class="fc bl"></span>
+  <span class="fc br"></span>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -534,6 +570,7 @@ const TRANS_DUR=900;
 const navUl=document.getElementById('screen-page-nav');
 const ctrlUl=document.getElementById('controller-parent');
 const knob=document.getElementById('knob');
+const focusFrame=document.getElementById('focus-frame');
 
 function layoutNav(){
   const isMobile = window.innerWidth <= 768;
@@ -552,6 +589,30 @@ function updateAboutText(idx){
 }
 updateAboutText(0);
 
+// ─── FOCUS FRAME POSITIONING ──────────────────────────────────────────────
+function positionFocusFrame(idx) {
+  const activeLi = navUl.querySelector(`li[data-idx="${idx}"]`);
+  if (!activeLi) { focusFrame.style.opacity = '0'; return; }
+
+  const isMob = window.innerWidth <= 768;
+  let target = activeLi.querySelector(isMob ? '.slide-mobile-btn' : 'a');
+  if (!target) target = activeLi.querySelector('a');
+  if (!target) { focusFrame.style.opacity = '0'; return; }
+
+  const r = target.getBoundingClientRect();
+  // Don't show frame on slide 0 (About) — no text label visible
+  if (r.width === 0) { focusFrame.style.opacity = '0'; return; }
+
+  const pad = 10;
+  focusFrame.style.left   = (r.left   - pad) + 'px';
+  focusFrame.style.top    = (r.top    - pad) + 'px';
+  focusFrame.style.width  = (r.width  + pad * 2) + 'px';
+  focusFrame.style.height = (r.height + pad * 2) + 'px';
+  focusFrame.style.opacity = '1';
+}
+
+window.addEventListener('resize', () => positionFocusFrame(current));
+
 function updateNav(idx){
   const sw = parseFloat(navUl.dataset.sw) || window.innerWidth * 0.5;
   navUl.style.transform=`translateX(${-(sw*idx-(window.innerWidth/2-sw/2))}px)`;
@@ -563,6 +624,9 @@ function updateNav(idx){
   });
   Array.from(ctrlUl.children).forEach((li,i)=>li.classList.toggle('is-current',i===idx));
   knob.style.transform=`translateX(${idx*(ctrlUl.offsetWidth/TOTAL)}px)`;
+
+  // Position focus frame after nav translation finishes
+  setTimeout(() => positionFocusFrame(idx), 60);
 }
 updateNav(0);
 
@@ -643,13 +707,209 @@ window.addEventListener('pointerup',()=>{
   stageDelta=0;
 });
 
-// ─── CURSOR ───────────────────────────────────────────────────────────────
-const cursor=document.getElementById('waiting-cover-cursor');
+// ─── FLUID GLASS CURSOR ───────────────────────────────────────────────────
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
-if(!isTouchDevice){
-  window.addEventListener('mousemove',e=>{ cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9'; });
-  window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
-}
+// applies refraction + chromatic aberration — no GLB files, no React needed.
+(function(){
+  if(isTouchDevice) return;
+
+  const SIZE   = 90;   // lens diameter in CSS px
+  const HALF   = SIZE / 2;
+  const el     = document.getElementById('fluid-cursor');
+  el.width     = SIZE;
+  el.height    = SIZE;
+  el.style.width  = SIZE + 'px';
+  el.style.height = SIZE + 'px';
+  el.style.borderRadius = '50%';
+  el.style.marginLeft = (-HALF) + 'px';
+  el.style.marginTop  = (-HALF) + 'px';
+
+  const gl = el.getContext('webgl2', { alpha:true, premultipliedAlpha:false });
+  if(!gl){ el.style.display='none'; return; }
+
+  // ── shaders ──────────────────────────────────────────────────────────────
+  const VS = `#version 300 es
+    in vec2 aPos;
+    out vec2 vUv;
+    void main(){
+      vUv = aPos * 0.5 + 0.5;
+      gl_Position = vec4(aPos, 0.0, 1.0);
+    }`;
+
+  const FS = `#version 300 es
+    precision highp float;
+    uniform sampler2D uScene;   // captured screen patch
+    uniform float uTime;
+    uniform float uIOR;         // index of refraction offset
+    uniform float uCA;          // chromatic aberration strength
+    uniform float uEdge;        // rim highlight strength
+    in vec2 vUv;
+    out vec4 fragColor;
+
+    void main(){
+      vec2 uv = vUv;
+      // lens distortion: project uv onto a sphere
+      vec2 c  = uv * 2.0 - 1.0;
+      float r2 = dot(c, c);
+      if(r2 > 1.0){ fragColor = vec4(0.0); return; }
+
+      float z   = sqrt(1.0 - r2);
+      vec3  n   = normalize(vec3(c, z));
+      // refraction vector (simplified Snell's law on flat surface)
+      vec3  rd  = vec3(0.0, 0.0, -1.0);
+      float eta = 1.0 / uIOR;
+      vec3  refr = refract(rd, n, eta);
+      vec2  disp = refr.xy * 0.38;
+
+      vec2 uvR = uv + disp * (1.0 + uCA);
+      vec2 uvG = uv + disp;
+      vec2 uvB = uv + disp * (1.0 - uCA);
+
+      // clamp to avoid edge sampling artefacts
+      uvR = clamp(uvR, 0.0, 1.0);
+      uvG = clamp(uvG, 0.0, 1.0);
+      uvB = clamp(uvB, 0.0, 1.0);
+
+      float rC = texture(uScene, uvR).r;
+      float gC = texture(uScene, uvG).g;
+      float bC = texture(uScene, uvB).b;
+
+      // subtle animated internal caustic sheen
+      float sheen = max(0.0, dot(n, normalize(vec3(0.4, 0.6, 0.8))));
+      sheen = pow(sheen, 6.0) * 0.22;
+      // gentle pulse
+      sheen *= 0.85 + 0.15 * sin(uTime * 1.3 + r2 * 4.0);
+
+      vec3 col = vec3(rC, gC, bC) + sheen * vec3(0.72, 0.70, 1.0);
+
+      // rim highlight — thin bright ring at edge
+      float rim = smoothstep(0.76, 1.0, r2);
+      col += rim * uEdge * vec3(0.9, 0.88, 1.0);
+
+      // inner vignette (very slight darkening toward center for depth)
+      col *= 1.0 - r2 * 0.08;
+
+      // soft alpha mask (perfectly circular)
+      float alpha = 1.0 - smoothstep(0.88, 1.0, r2);
+      fragColor = vec4(col * alpha, alpha);
+    }`;
+
+  function compile(type, src){
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src); gl.compileShader(s);
+    return s;
+  }
+  const prog = gl.createProgram();
+  gl.attachShader(prog, compile(gl.VERTEX_SHADER,   VS));
+  gl.attachShader(prog, compile(gl.FRAGMENT_SHADER, FS));
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
+
+  // fullscreen quad
+  const buf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 1,-1, -1,1, 1,1]), gl.STATIC_DRAW);
+  const aPos = gl.getAttribLocation(prog, 'aPos');
+  gl.enableVertexAttribArray(aPos);
+  gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
+
+  const uScene = gl.getUniformLocation(prog, 'uScene');
+  const uTime  = gl.getUniformLocation(prog, 'uTime');
+  const uIOR   = gl.getUniformLocation(prog, 'uIOR');
+  const uCA    = gl.getUniformLocation(prog, 'uCA');
+  const uEdge  = gl.getUniformLocation(prog, 'uEdge');
+
+  gl.uniform1i(uScene, 0);
+  gl.uniform1f(uIOR,  1.45);
+  gl.uniform1f(uCA,   0.06);
+  gl.uniform1f(uEdge, 0.55);
+
+  // texture for the captured screen patch
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+
+  // scratch canvas to grab the composed scene (Three.js canvas + overlays)
+  const grab = document.createElement('canvas');
+  grab.width  = SIZE;
+  grab.height = SIZE;
+  const grabCtx = grab.getContext('2d', { willReadFrequently: true });
+
+  let mx = -9999, my = -9999, visible = false;
+  const DPR = Math.min(window.devicePixelRatio, 2);
+
+  window.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    if(!visible){ visible = true; el.classList.add('visible'); }
+    el.style.left = mx + 'px';
+    el.style.top  = my + 'px';
+  });
+  window.addEventListener('mouseleave', () => {
+    visible = false; el.classList.remove('visible');
+  });
+
+  // The main Three.js canvas (the scene background)
+  const sceneCanvas = document.querySelector('#stage canvas');
+
+  function drawLens(ts){
+    requestAnimationFrame(drawLens);
+    if(!visible || mx < 0) return;
+
+    // ── capture a SIZE×SIZE patch of the scene behind the cursor ──
+    // 1. draw the Three.js scene canvas (scaled back to CSS pixels)
+    const sw = sceneCanvas.width  / DPR;   // CSS width
+    const sh = sceneCanvas.height / DPR;   // CSS height
+
+    // source rect in CSS px (the patch under the cursor)
+    const sx = mx - HALF;
+    const sy = my - HALF;
+
+    grabCtx.clearRect(0, 0, SIZE, SIZE);
+    try {
+      grabCtx.drawImage(
+        sceneCanvas,
+        sx * DPR, sy * DPR,           // src x,y  (in canvas px)
+        SIZE * DPR, SIZE * DPR,        // src w,h
+        0, 0, SIZE, SIZE               // dst
+      );
+    } catch(e){ return; }
+
+    // 2. also composite any DOM layers that sit above (video, etc.)
+    // We approximate by drawing the video background if visible
+    const vid = document.getElementById('video-bg');
+    if(vid && vid.classList.contains('visible') && vid.readyState >= 2){
+      const vw = vid.videoWidth, vh = vid.videoHeight;
+      const cw = window.innerWidth, ch = window.innerHeight;
+      // object-fit:cover scale
+      const scale = Math.max(cw/vw, ch/vh);
+      const dw = vw*scale, dh = vh*scale;
+      const ox = (cw - dw)/2, oy = (ch - dh)/2;
+      grabCtx.drawImage(
+        vid,
+        (sx - ox) / scale * (vw/vw), (sy - oy) / scale,
+        SIZE / scale, SIZE / scale,
+        0, 0, SIZE, SIZE
+      );
+    }
+
+    // ── upload to WebGL texture ──
+    gl.bindTexture(gl.TEXTURE_2D, tex);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, grab);
+
+    // ── render ──
+    gl.viewport(0, 0, SIZE, SIZE);
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+    gl.clearColor(0,0,0,0);
+    gl.clear(gl.COLOR_BUFFER_BIT);
+    gl.uniform1f(uTime, ts * 0.001);
+    gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  }
+  requestAnimationFrame(drawLens);
+})();
 
 // ─── RENDER ───────────────────────────────────────────────────────────────
 (function animate(ts){
