@@ -11,7 +11,7 @@
 :root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;user-select:none;}
 
-@media (pointer:coarse){ body{cursor:auto;} #waiting-cover-cursor{display:none!important;} }
+@media (pointer:coarse){ body{cursor:auto;} #fluid-cursor{display:none!important;} }
 @media (pointer:fine){ body{cursor:none;} }
 
 /* ── LOADING SCREEN ── */
@@ -175,11 +175,25 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
 
-/* ── CUSTOM CURSOR ── */
-#waiting-cover-cursor{position:fixed;pointer-events:none;z-index:900;width:52px;height:52px;margin-left:-26px;margin-top:-26px;}
-#waiting-cover-cursor .inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-#waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
-@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+/* ── FLUID GLASS CURSOR ── */
+#fluid-cursor{
+  position:fixed;
+  pointer-events:none;
+  z-index:900;
+  width:64px;
+  height:64px;
+  margin-left:-32px;
+  margin-top:-32px;
+  left:50%;
+  top:50%;
+  opacity:0;
+  transition:opacity 0.3s;
+}
+#fluid-cursor canvas{
+  width:100% !important;
+  height:100% !important;
+  border-radius:50%;
+}
 
 @media (max-width:768px){
   #stage{inset:0;transform:none!important;will-change:auto;}
@@ -348,10 +362,9 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     </div>
   </div>
 
-  <div id="waiting-cover-cursor" style="opacity:0;left:50%;top:50%;">
-    <div class="inner">
-      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAaABoDASIAAhEBAxEB/8QAGwAAAQQDAAAAAAAAAAAAAAAABAUGBwgAAgP/xAAsEAACAgECBQIEBwAAAAAAAAABAgMEBQARBhIhQVEHExQxMoFDYWJxoeHx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKz47EYrh3hutxFxDX+Mt3gWx2PJ2UoPxZP0+B3+/RNn40zTsVhNStB2ghrIEA8dQT/Olv16VofUKWguwq06leGqB8hH7Skbfdm0wdA4Y5KWfBgetDTyOxMckQ5UlPgjsfz/AM0gOrI7I4Ksp2IPY62ru8ViOSPcOjBl28g6f09HGyTySOiczMS3TuToD7NMep3C1CxjJI24rxFYVrNR3CtdgX6JE3+bDuP63je9QvULJrXqdirOp2Mc0ZRgf2OuVaeerYSxWmkgmjPMkkbFWU+QR1B1YXiS5buejmKsW7U9iZrUZMkshZifbk7nroIOxlH4XlyORUxQxnmRG6NK3YAeNAz37Us8kpmZS7Ftgeg3Osycsst2QyyPIQxA5mJ2GhdB/9k=" alt="">
-    </div>
+  <!-- ── FLUID GLASS CURSOR ── -->
+  <div id="fluid-cursor">
+    <canvas id="glass-canvas" width="128" height="128"></canvas>
   </div>
 
 </div><!-- /site-wrap -->
@@ -643,12 +656,134 @@ window.addEventListener('pointerup',()=>{
   stageDelta=0;
 });
 
-// ─── CURSOR ───────────────────────────────────────────────────────────────
-const cursor=document.getElementById('waiting-cover-cursor');
+// ─── FLUID GLASS CURSOR ───────────────────────────────────────────────────
+const fluidCursor = document.getElementById('fluid-cursor');
+const glassCanvas = document.getElementById('glass-canvas');
+const glCtx = glassCanvas.getContext('2d');
+
+let gcx = window.innerWidth / 2, gcy = window.innerHeight / 2;
+let gcxSmooth = gcx, gcySmooth = gcy;
+let gcTime = 0;
+
+function drawGlassCursor(ts) {
+  gcTime = ts * 0.001;
+  const W = 128, H = 128, cx = W / 2, cy = H / 2, R = 30;
+  glCtx.clearRect(0, 0, W, H);
+
+  glCtx.save();
+  glCtx.beginPath();
+  glCtx.arc(cx, cy, R, 0, Math.PI * 2);
+  glCtx.clip();
+
+  // Sample the Three.js canvas for live refraction
+  const stageC = document.querySelector('#stage canvas');
+  if (stageC && stageC.width > 0) {
+    try {
+      const zoom = 1.22;
+      const srcX = gcxSmooth - (W / 2) / zoom;
+      const srcY = gcySmooth - (H / 2) / zoom;
+      const srcW = W / zoom;
+      const srcH = H / zoom;
+
+      glCtx.save();
+      glCtx.translate(cx, cy);
+      glCtx.scale(zoom, zoom);
+      glCtx.translate(-cx, -cy);
+      glCtx.drawImage(stageC, srcX, srcY, srcW, srcH, 0, 0, W, H);
+      glCtx.restore();
+    } catch(e) {
+      // Cross-origin fallback: purple glass gradient
+      const grad = glCtx.createRadialGradient(cx - 8, cy - 8, 2, cx, cy, R);
+      grad.addColorStop(0, 'rgba(180,170,255,0.22)');
+      grad.addColorStop(0.5, 'rgba(100,90,200,0.14)');
+      grad.addColorStop(1, 'rgba(20,10,60,0.35)');
+      glCtx.fillStyle = grad;
+      glCtx.fillRect(0, 0, W, H);
+    }
+  } else {
+    const grad = glCtx.createRadialGradient(cx - 8, cy - 8, 2, cx, cy, R);
+    grad.addColorStop(0, 'rgba(180,170,255,0.22)');
+    grad.addColorStop(0.5, 'rgba(100,90,200,0.14)');
+    grad.addColorStop(1, 'rgba(20,10,60,0.35)');
+    glCtx.fillStyle = grad;
+    glCtx.fillRect(0, 0, W, H);
+  }
+
+  // Chromatic aberration — red fringe
+  glCtx.globalCompositeOperation = 'screen';
+  glCtx.globalAlpha = 0.13;
+  const rFringe = glCtx.createRadialGradient(cx + 2.5, cy, R * 0.1, cx + 2.5, cy, R);
+  rFringe.addColorStop(0, 'rgba(255,60,60,0)');
+  rFringe.addColorStop(0.65, 'rgba(255,60,60,0)');
+  rFringe.addColorStop(1, 'rgba(255,60,60,1)');
+  glCtx.fillStyle = rFringe;
+  glCtx.fillRect(0, 0, W, H);
+
+  // Chromatic aberration — blue fringe
+  const bFringe = glCtx.createRadialGradient(cx - 2.5, cy, R * 0.1, cx - 2.5, cy, R);
+  bFringe.addColorStop(0, 'rgba(80,120,255,0)');
+  bFringe.addColorStop(0.65, 'rgba(80,120,255,0)');
+  bFringe.addColorStop(1, 'rgba(80,120,255,1)');
+  glCtx.fillStyle = bFringe;
+  glCtx.fillRect(0, 0, W, H);
+
+  glCtx.globalCompositeOperation = 'source-over';
+  glCtx.globalAlpha = 1;
+  glCtx.restore();
+
+  // Animated specular highlight
+  const hx = cx - 9 + Math.sin(gcTime * 0.7) * 2;
+  const hy = cy - 11 + Math.cos(gcTime * 0.5) * 1.5;
+  const hiGrad = glCtx.createRadialGradient(hx, hy, 0, hx, hy, 13);
+  hiGrad.addColorStop(0, 'rgba(255,255,255,0.78)');
+  hiGrad.addColorStop(0.4, 'rgba(255,255,255,0.20)');
+  hiGrad.addColorStop(1, 'rgba(255,255,255,0)');
+  glCtx.fillStyle = hiGrad;
+  glCtx.beginPath();
+  glCtx.arc(cx, cy, R, 0, Math.PI * 2);
+  glCtx.fill();
+
+  // Secondary soft highlight (bottom-right bounce light)
+  const h2Grad = glCtx.createRadialGradient(cx + 10, cy + 10, 0, cx + 10, cy + 10, 10);
+  h2Grad.addColorStop(0, 'rgba(200,190,255,0.18)');
+  h2Grad.addColorStop(1, 'rgba(200,190,255,0)');
+  glCtx.fillStyle = h2Grad;
+  glCtx.beginPath();
+  glCtx.arc(cx, cy, R, 0, Math.PI * 2);
+  glCtx.fill();
+
+  // Rim border
+  glCtx.beginPath();
+  glCtx.arc(cx, cy, R, 0, Math.PI * 2);
+  glCtx.strokeStyle = 'rgba(180,170,255,0.4)';
+  glCtx.lineWidth = 1.2;
+  glCtx.stroke();
+
+  // Inner rim
+  glCtx.beginPath();
+  glCtx.arc(cx, cy, R - 2, 0, Math.PI * 2);
+  glCtx.strokeStyle = 'rgba(255,255,255,0.09)';
+  glCtx.lineWidth = 1;
+  glCtx.stroke();
+}
+
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
-if(!isTouchDevice){
-  window.addEventListener('mousemove',e=>{ cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9'; });
-  window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
+if (!isTouchDevice) {
+  window.addEventListener('mousemove', e => {
+    gcx = e.clientX;
+    gcy = e.clientY;
+    fluidCursor.style.left = e.clientX + 'px';
+    fluidCursor.style.top  = e.clientY + 'px';
+    fluidCursor.style.opacity = '1';
+  });
+  window.addEventListener('mouseleave', () => { fluidCursor.style.opacity = '0'; });
+
+  (function lensLoop(ts) {
+    requestAnimationFrame(lensLoop);
+    gcxSmooth += (gcx - gcxSmooth) * 0.12;
+    gcySmooth += (gcy - gcySmooth) * 0.12;
+    drawGlassCursor(ts);
+  })();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────
