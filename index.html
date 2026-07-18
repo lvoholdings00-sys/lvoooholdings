@@ -11,7 +11,7 @@
 :root{--white:#fff;--dim:rgba(255,255,255,0.5);--dimmer:rgba(255,255,255,0.25);--purple:#7F77DD;}
 html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Times New Roman',Georgia,serif;user-select:none;}
 
-@media (pointer:coarse){ body{cursor:auto;} #waiting-cover-cursor{display:none!important;} }
+@media (pointer:coarse){ body{cursor:auto;} }
 @media (pointer:fine){ body{cursor:none;} }
 
 /* ── LOADING SCREEN ── */
@@ -175,11 +175,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
 
-/* ── CUSTOM CURSOR ── */
-#waiting-cover-cursor{position:fixed;pointer-events:none;z-index:900;width:52px;height:52px;margin-left:-26px;margin-top:-26px;}
-#waiting-cover-cursor .inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;}
-#waiting-cover-cursor img{width:26px;height:26px;animation:spin 1.8s linear infinite;}
-@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+/* ── CUSTOM CURSOR (trailing particles, canvas-based) ── */
+#trailing-cursor-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:900;}
 
 @media (max-width:768px){
   #stage{inset:0;transform:none!important;will-change:auto;}
@@ -345,12 +342,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
         <li class="nav-list controller-item" data-idx="3"><span class="numerator">3</span></li>
         <li class="nav-list controller-item" data-idx="4"><span class="numerator">4</span></li>
       </ul>
-    </div>
-  </div>
-
-  <div id="waiting-cover-cursor" style="opacity:0;left:50%;top:50%;">
-    <div class="inner">
-      <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQEAAAHIAAAAAAQwAABtbnRyUkdCIFhZWiAH4AABAAEAAAAAAABhY3NwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAA9tYAAQAAAADTLQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAlkZXNjAAAA8AAAACRyWFlaAAABFAAAABRnWFlaAAABKAAAABRiWFlaAAABPAAAABR3dHB0AAABUAAAABRyVFJDAAABZAAAAChnVFJDAAABZAAAAChiVFJDAAABZAAAAChjcHJ0AAABjAAAADxtbHVjAAAAAAAAAAEAAAAMZW5VUwAAAAgAAAAcAHMAUgBHAEJYWVogAAAAAAAAb6IAADj1AAADkFhZWiAAAAAAAABimQAAt4UAABjaWFlaIAAAAAAAACSgAAAPhAAAts9YWVogAAAAAAAA9tYAAQAAAADTLXBhcmEAAAAAAAQAAAACZmYAAPKnAAANWQAAE9AAAApbAAAAAAAAAABtbHVjAAAAAAAAAAEAAAAMZW5VUwAAACAAAAAcAEcAbwBvAGcAbABlACAASQBuAGMALgAgADIAMAAxADb/2wBDAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx7/2wBDAQUFBQcGBw4ICA4eFBEUHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh7/wAARCAAaABoDASIAAhEBAxEB/8QAGwAAAQQDAAAAAAAAAAAAAAAABAUGBwgAAgP/xAAsEAACAgECBQIEBwAAAAAAAAABAgMEBQARBhIhQVEHExQxMoFDYWJxoeHx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AKz47EYrh3hutxFxDX+Mt3gWx2PJ2UoPxZP0+B3+/RNn40zTsVhNStB2ghrIEA8dQT/Olv16VofUKWguwq06leGqB8hH7Skbfdm0wdA4Y5KWfBgetDTyOxMckQ5UlPgjsfz/AM0gOrI7I4Ksp2IPY62ru8ViOSPcOjBl28g6f09HGyTySOiczMS3TuToD7NMep3C1CxjJI24rxFYVrNR3CtdgX6JE3+bDuP63je9QvULJrXqdirOp2Mc0ZRgf2OuVaeerYSxWmkgmjPMkkbFWU+QR1B1YXiS5buejmKsW7U9iZrUZMkshZifbk7nroIOxlH4XlyORUxQxnmRG6NK3YAeNAz37Us8kpmZS7Ftgeg3Osycsst2QyyPIQxA5mJ2GhdB/9k=" alt="">
     </div>
   </div>
 
@@ -644,11 +635,58 @@ window.addEventListener('pointerup',()=>{
 });
 
 // ─── CURSOR ───────────────────────────────────────────────────────────────
-const cursor=document.getElementById('waiting-cover-cursor');
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
+
 if(!isTouchDevice){
-  window.addEventListener('mousemove',e=>{ cursor.style.left=e.clientX+'px'; cursor.style.top=e.clientY+'px'; cursor.style.opacity='0.9'; });
-  window.addEventListener('mouseleave',()=>cursor.style.opacity='0');
+  // Trailing-particle custom cursor, ported from the TrailingCursor React component.
+  const CURSOR_PARTICLE_SRC = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADKADAAQAAAABAAAAEwAAAAAChpcNAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAABqElEQVQoFY3SPUvDQBgH8BREpRHExYiDgmLFl6WC+AYmWeyLg4i7buJX8DMpOujgyxGvUYeCgzhUQUSKKLUS0+ZyptXh8Z5Ti621ekPyJHl+uftfomhaf9Ei5JyxXKfynyEA6EYcLHpwyflT958GAQ7DTABNHd8EbtDbEH2BD5QEQmi2mM8P/Iq+A0SzszEg+3sPjDnDdVEtQKQbMUidHD3xVzf6A9UDEmEm+8h9KTqTVUjT+vB53aHrCbAPiceYq1dQI1Aqv4EhMll0jzv+Y0yiRgCnLRSYyDQHVoqUXe4uKL9l+L7GXC4vkMhE6eW/AOJs9k583ORDUyXMZ8F5SVHVVnllmPNKSFagAJ5DofaqGXw/gHBYg51dIldkmknY3tguv3jOtHR4+MqAzaraJXbEhqHhcQlwGSOi5pytVQHZLN5s0WNe8HPrLYlFsO20RPHkImxsbmHdLJFI76th7Z4SeuF53hTeFLvhRCJRCTKZKxgdnRDbW+iozFJbBMw14/ElwGYc0egMBMFzT21f5Rog33Z7dX02GBm7WV5ZfT5Nn5bE3zuCDe9UxdTpNvK+5AAAAABJRU5ErkJggg==';
+
+  const CURSOR_PARTICLE_COUNT = 15;
+  const CURSOR_RATE = 0.4;
+
+  const cursorImage = new Image();
+  cursorImage.src = CURSOR_PARTICLE_SRC;
+
+  const trailCanvas = document.createElement('canvas');
+  trailCanvas.id = 'trailing-cursor-canvas';
+  trailCanvas.width = window.innerWidth;
+  trailCanvas.height = window.innerHeight;
+  document.body.appendChild(trailCanvas);
+  const trailCtx = trailCanvas.getContext('2d');
+
+  window.addEventListener('resize', ()=>{
+    trailCanvas.width = window.innerWidth;
+    trailCanvas.height = window.innerHeight;
+  });
+
+  let cursorPos = { x: window.innerWidth/2, y: window.innerHeight/2 };
+  let cursorParticles = [];
+  let cursorParticlesInitted = false;
+
+  window.addEventListener('mousemove', e=>{
+    cursorPos.x = e.clientX;
+    cursorPos.y = e.clientY;
+    if(!cursorParticlesInitted){
+      cursorParticlesInitted = true;
+      for(let i=0;i<CURSOR_PARTICLE_COUNT;i++){
+        cursorParticles.push({ x: cursorPos.x, y: cursorPos.y });
+      }
+    }
+  });
+
+  (function trailLoop(){
+    requestAnimationFrame(trailLoop);
+    trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
+    if(!cursorParticlesInitted || !cursorImage.complete) return;
+    let x = cursorPos.x, y = cursorPos.y;
+    cursorParticles.forEach((p, i)=>{
+      const next = cursorParticles[i+1] || cursorParticles[0];
+      p.x = x; p.y = y;
+      trailCtx.drawImage(cursorImage, p.x, p.y);
+      x += (next.x - p.x) * CURSOR_RATE;
+      y += (next.y - p.y) * CURSOR_RATE;
+    });
+  })();
 }
 
 // ─── RENDER ───────────────────────────────────────────────────────────────
