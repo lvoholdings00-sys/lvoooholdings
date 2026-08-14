@@ -141,7 +141,8 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   #screen-page-nav li[data-idx="2"],
   #screen-page-nav li[data-idx="3"],
-  #screen-page-nav li[data-idx="4"]{
+  #screen-page-nav li[data-idx="4"],
+  #screen-page-nav li[data-idx="5"]{
     margin-top:22vh;
   }
 
@@ -328,6 +329,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
         <a href="https://ops.wearelvo.com/">Operations</a>
         <a class="slide-mobile-btn" href="https://ops.wearelvo.com/">Operations</a>
       </li>
+      <!-- Slide 5: Careers -->
+      <li data-idx="5" data-href="https://careers.wearelvo.com/" class="has-mobile-btn">
+        <a href="https://careers.wearelvo.com/">Careers</a>
+        <a class="slide-mobile-btn" href="https://careers.wearelvo.com/">Careers</a>
+      </li>
     </ul>
   </div>
 
@@ -342,6 +348,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
         <li class="nav-list controller-item" data-idx="2"><span class="numerator">2</span></li>
         <li class="nav-list controller-item" data-idx="3"><span class="numerator">3</span></li>
         <li class="nav-list controller-item" data-idx="4"><span class="numerator">4</span></li>
+        <li class="nav-list controller-item" data-idx="5"><span class="numerator">5</span></li>
       </ul>
     </div>
   </div>
@@ -350,7 +357,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
-// ─── DEVICE DETECTION ─────────────────────────────────────────────────────
 const isMobileDevice = window.innerWidth <= 768;
 const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
 
@@ -361,7 +367,6 @@ if (isMobileDevice) {
   WATER_INTENSITY = 0.022;
 }
 
-// ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
 function dismissLoader(){
@@ -372,7 +377,6 @@ function dismissLoader(){
 }
 setTimeout(dismissLoader, 2400);
 
-// ─── SLIDES ────────────────────────────────────────────────────────────────
 const ASSETS = 'https://assets.wearelvo.com/';
 
 function getImageUrl(desktopImg, mobileImg) {
@@ -385,6 +389,7 @@ const SLIDES = [
   { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
   { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
   { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG' },
+  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG' },
 ];
 const TOTAL = SLIDES.length;
 
@@ -403,7 +408,6 @@ function updateVideoBackground(idx){
 }
 updateVideoBackground(0);
 
-// ─── THREE.JS ─────────────────────────────────────────────────────────────
 const canvas = document.querySelector('#stage canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -520,7 +524,6 @@ function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
 window.addEventListener('resize', resize);
 
-// ─── NAV ──────────────────────────────────────────────────────────────────
 let current=0, transitioning=false, transitionStart=0;
 const TRANS_DUR=900;
 const navUl=document.getElementById('screen-page-nav');
@@ -573,7 +576,6 @@ function goTo(idx){
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
 
-// ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
 let navDragMoved=false, navDragStartX=0;
@@ -635,7 +637,6 @@ window.addEventListener('pointerup',()=>{
   stageDelta=0;
 });
 
-// ─── CURSOR ───────────────────────────────────────────────────────────────
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 
 if(!isTouchDevice){
@@ -690,7 +691,6 @@ if(!isTouchDevice){
   })();
 }
 
-// ─── RENDER ───────────────────────────────────────────────────────────────
 (function animate(ts){
   requestAnimationFrame(animate);
   uniforms.uTime.value=ts*0.001;
@@ -701,7 +701,6 @@ if(!isTouchDevice){
   renderer.render(scene,camera);
 })();
 
-// ─── AUTO-ADVANCE ─────────────────────────────────────────────────────────
 const AUTO_INTERVAL=12000;
 let progressStart=0, autoRunning=false;
 function resetProgress(){ progressStart=performance.now(); }
@@ -721,7 +720,6 @@ window.addEventListener('wheel',resetProgress);
 window.addEventListener('pointerup',resetProgress);
 window.addEventListener('touchend',resetProgress);
 
-// ─── PARALLAX TILT (desktop only) ─────────────────────────────────────────
 const stageEl = document.getElementById('stage');
 let mouseX=0, mouseY=0, tiltX=0, tiltY=0;
 if(!isTouchDevice){
@@ -739,5 +737,4 @@ if(!isTouchDevice){
 }
 </script>
 </body>
-</html>
 </html>
