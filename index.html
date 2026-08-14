@@ -384,12 +384,12 @@ function getImageUrl(desktopImg, mobileImg) {
 }
 
 const SLIDES = [
-  { label:'About',      img: ASSETS+'LVO%20R.jpg',      mobile_img: ASSETS+'LVO%20Mobile%20R.jpg' },
-  { label:'Connect',    img: ASSETS+'LVO.jpg',          mobile_img: ASSETS+'LVO%20Mobile.JPG' },
-  { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
-  { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
-  { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG' },
-  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG' },
+  { label:'About',      img: ASSETS+'LVO%20R.jpg',      mobile_img: ASSETS+'LVO%20Mobile%20R.jpg',      darken: 1.0 },
+  { label:'Connect',    img: ASSETS+'LVO.jpg',          mobile_img: ASSETS+'LVO%20Mobile.JPG',          darken: 1.0 },
+  { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG',       darken: 1.0 },
+  { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG',     darken: 1.0 },
+  { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG',   darken: 1.0 },
+  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      darken: 0.45 },
 ];
 const TOTAL = SLIDES.length;
 
@@ -430,6 +430,8 @@ uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
 uniform int uHasTexB;
+uniform float uDarkenA;
+uniform float uDarkenB;
 uniform float uWaterIntensity;
 varying vec2 vUv;
 
@@ -454,13 +456,13 @@ void main(){
   vec3 colA, colB;
 
   if(uHasTexA == 1){
-    colA = texture2D(uTexA, wuv).rgb * 0.82;
+    colA = texture2D(uTexA, wuv).rgb * 0.82 * uDarkenA;
   } else {
     colA = vec3(0.04, 0.02, 0.12);
   }
 
   if(uHasTexB == 1){
-    colB = texture2D(uTexB, wuv).rgb * 0.82;
+    colB = texture2D(uTexB, wuv).rgb * 0.82 * uDarkenB;
   } else {
     colB = vec3(0.04, 0.02, 0.12);
   }
@@ -515,6 +517,8 @@ const uniforms = {
   uTexB:           {value:placeholder},
   uHasTexA:        {value:0},
   uHasTexB:        {value:0},
+  uDarkenA:        {value: SLIDES[0].darken ?? 1.0},
+  uDarkenB:        {value: SLIDES[0].darken ?? 1.0},
   uWaterIntensity: {value:WATER_INTENSITY},
 };
 
@@ -568,6 +572,8 @@ function goTo(idx){
   const tA=textures[idx], tB=textures[prev];
   uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
   uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
+  uniforms.uDarkenB.value=SLIDES[prev].darken ?? 1.0;
+  uniforms.uDarkenA.value=SLIDES[idx].darken ?? 1.0;
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
