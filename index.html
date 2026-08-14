@@ -141,8 +141,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   #screen-page-nav li[data-idx="2"],
   #screen-page-nav li[data-idx="3"],
-  #screen-page-nav li[data-idx="4"],
-  #screen-page-nav li[data-idx="5"]{
+  #screen-page-nav li[data-idx="4"]{
     margin-top:22vh;
   }
 
@@ -176,27 +175,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #controller-parent li{cursor:pointer;}
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
-
-/* ── LIGHT SLIDE OVERRIDES (Careers) ── */
-body.light-slide #title a,
-body.light-slide #screen-page-nav li a,
-body.light-slide .controller-item.is-symbol.is-current .numerator,
-body.light-slide #controller-parent li.is-current .numerator{
-  color:#1B1B1B;
-}
-body.light-slide #title-indicator,
-body.light-slide .separator{
-  background:#1B1B1B;
-}
-body.light-slide .numerator{
-  color:rgba(20,20,20,0.4);
-}
-body.light-slide #screen-page-nav li:not(.is-current) .slide-mobile-btn{
-  color:rgba(20,20,20,0.28) !important;
-}
-body.light-slide #screen-page-nav li.is-current .slide-mobile-btn{
-  color:rgba(20,20,20,0.9) !important;
-}
 
 /* ── CUSTOM CURSOR (trailing particles, canvas-based) ── */
 #trailing-cursor-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:900;}
@@ -294,17 +272,6 @@ body.light-slide #screen-page-nav li.is-current .slide-mobile-btn{
 #stage.video-mode canvas{
   opacity:0;
 }
-
-/* ── LIGHT SLIDE OVERLAY (Careers only) ── */
-#light-overlay{
-  position:fixed; inset:0; z-index:6;
-  pointer-events:none;
-  background:radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.9) 100%);
-  mix-blend-mode:screen;
-  opacity:0;
-  transition:opacity 0.8s ease;
-}
-body.light-slide #light-overlay{ opacity:1; }
 </style>
 </head>
 <body>
@@ -321,7 +288,6 @@ body.light-slide #light-overlay{ opacity:1; }
 <div id="site-wrap">
 
   <div id="stage"><canvas></canvas></div>
-  <div id="light-overlay"></div>
   <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" autoplay loop muted playsinline preload="auto"></video>
 
   <div id="title">
@@ -362,11 +328,6 @@ body.light-slide #light-overlay{ opacity:1; }
         <a href="https://ops.wearelvo.com/">Operations</a>
         <a class="slide-mobile-btn" href="https://ops.wearelvo.com/">Operations</a>
       </li>
-      <!-- Slide 5: Careers -->
-      <li data-idx="5" data-href="https://careers.wearelvo.com/" class="has-mobile-btn">
-        <a href="https://careers.wearelvo.com/">Careers</a>
-        <a class="slide-mobile-btn" href="https://careers.wearelvo.com/">Careers</a>
-      </li>
     </ul>
   </div>
 
@@ -381,7 +342,6 @@ body.light-slide #light-overlay{ opacity:1; }
         <li class="nav-list controller-item" data-idx="2"><span class="numerator">2</span></li>
         <li class="nav-list controller-item" data-idx="3"><span class="numerator">3</span></li>
         <li class="nav-list controller-item" data-idx="4"><span class="numerator">4</span></li>
-        <li class="nav-list controller-item" data-idx="5"><span class="numerator">5</span></li>
       </ul>
     </div>
   </div>
@@ -390,6 +350,7 @@ body.light-slide #light-overlay{ opacity:1; }
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
+// ─── DEVICE DETECTION ─────────────────────────────────────────────────────
 const isMobileDevice = window.innerWidth <= 768;
 const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
 
@@ -400,6 +361,7 @@ if (isMobileDevice) {
   WATER_INTENSITY = 0.022;
 }
 
+// ─── LOADING SCREEN ───────────────────────────────────────────────────────
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
 function dismissLoader(){
@@ -410,6 +372,7 @@ function dismissLoader(){
 }
 setTimeout(dismissLoader, 2400);
 
+// ─── SLIDES ────────────────────────────────────────────────────────────────
 const ASSETS = 'https://assets.wearelvo.com/';
 
 function getImageUrl(desktopImg, mobileImg) {
@@ -417,12 +380,11 @@ function getImageUrl(desktopImg, mobileImg) {
 }
 
 const SLIDES = [
-  { label:'About',      img: ASSETS+'LVO%20R.jpg',      mobile_img: ASSETS+'LVO%20Mobile%20R.jpg',      darken: 1.0 },
-  { label:'Connect',    img: ASSETS+'LVO.jpg',          mobile_img: ASSETS+'LVO%20Mobile.JPG',          darken: 1.0 },
-  { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG',       darken: 1.0 },
-  { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG',     darken: 1.0 },
-  { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG',   darken: 1.0 },
-  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      light: true },
+  { label:'About',      img: ASSETS+'LVO%20R.jpg',      mobile_img: ASSETS+'LVO%20Mobile%20R.jpg' },
+  { label:'Connect',    img: ASSETS+'LVO.jpg',          mobile_img: ASSETS+'LVO%20Mobile.JPG' },
+  { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG' },
+  { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG' },
+  { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG' },
 ];
 const TOTAL = SLIDES.length;
 
@@ -441,6 +403,7 @@ function updateVideoBackground(idx){
 }
 updateVideoBackground(0);
 
+// ─── THREE.JS ─────────────────────────────────────────────────────────────
 const canvas = document.querySelector('#stage canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -557,6 +520,7 @@ function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
 window.addEventListener('resize', resize);
 
+// ─── NAV ──────────────────────────────────────────────────────────────────
 let current=0, transitioning=false, transitionStart=0;
 const TRANS_DUR=900;
 const navUl=document.getElementById('screen-page-nav');
@@ -601,7 +565,6 @@ function goTo(idx){
   const tA=textures[idx], tB=textures[prev];
   uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
   uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
-  document.body.classList.toggle('light-slide', !!SLIDES[idx].light);
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
@@ -610,6 +573,7 @@ function goTo(idx){
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
 
+// ─── INPUT ────────────────────────────────────────────────────────────────
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
 let navDragMoved=false, navDragStartX=0;
@@ -671,6 +635,7 @@ window.addEventListener('pointerup',()=>{
   stageDelta=0;
 });
 
+// ─── CURSOR ───────────────────────────────────────────────────────────────
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 
 if(!isTouchDevice){
@@ -725,6 +690,7 @@ if(!isTouchDevice){
   })();
 }
 
+// ─── RENDER ───────────────────────────────────────────────────────────────
 (function animate(ts){
   requestAnimationFrame(animate);
   uniforms.uTime.value=ts*0.001;
@@ -735,6 +701,7 @@ if(!isTouchDevice){
   renderer.render(scene,camera);
 })();
 
+// ─── AUTO-ADVANCE ─────────────────────────────────────────────────────────
 const AUTO_INTERVAL=12000;
 let progressStart=0, autoRunning=false;
 function resetProgress(){ progressStart=performance.now(); }
@@ -754,6 +721,7 @@ window.addEventListener('wheel',resetProgress);
 window.addEventListener('pointerup',resetProgress);
 window.addEventListener('touchend',resetProgress);
 
+// ─── PARALLAX TILT (desktop only) ─────────────────────────────────────────
 const stageEl = document.getElementById('stage');
 let mouseX=0, mouseY=0, tiltX=0, tiltY=0;
 if(!isTouchDevice){
@@ -771,4 +739,5 @@ if(!isTouchDevice){
 }
 </script>
 </body>
+</html>
 </html>
