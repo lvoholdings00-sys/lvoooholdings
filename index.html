@@ -294,6 +294,17 @@ body.light-slide #screen-page-nav li.is-current .slide-mobile-btn{
 #stage.video-mode canvas{
   opacity:0;
 }
+
+/* ── LIGHT SLIDE OVERLAY (Careers only) ── */
+#light-overlay{
+  position:fixed; inset:0; z-index:6;
+  pointer-events:none;
+  background:radial-gradient(circle at center, transparent 30%, rgba(255,255,255,0.9) 100%);
+  mix-blend-mode:screen;
+  opacity:0;
+  transition:opacity 0.8s ease;
+}
+body.light-slide #light-overlay{ opacity:1; }
 </style>
 </head>
 <body>
@@ -310,6 +321,7 @@ body.light-slide #screen-page-nav li.is-current .slide-mobile-btn{
 <div id="site-wrap">
 
   <div id="stage"><canvas></canvas></div>
+  <div id="light-overlay"></div>
   <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" autoplay loop muted playsinline preload="auto"></video>
 
   <div id="title">
@@ -410,7 +422,7 @@ const SLIDES = [
   { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG',       darken: 1.0 },
   { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG',     darken: 1.0 },
   { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG',   darken: 1.0 },
-  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      darken: 1.0, light: true },
+  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      light: true },
 ];
 const TOTAL = SLIDES.length;
 
@@ -451,11 +463,7 @@ uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
 uniform int uHasTexB;
-uniform float uDarkenA;
-uniform float uDarkenB;
 uniform float uWaterIntensity;
-uniform vec3 uVoidA;
-uniform vec3 uVoidB;
 varying vec2 vUv;
 
 float wave(vec2 p, float freq, float phase){
@@ -479,15 +487,15 @@ void main(){
   vec3 colA, colB;
 
   if(uHasTexA == 1){
-    colA = texture2D(uTexA, wuv).rgb * 0.82 * uDarkenA;
+    colA = texture2D(uTexA, wuv).rgb * 0.82;
   } else {
-    colA = uVoidA;
+    colA = vec3(0.04, 0.02, 0.12);
   }
 
   if(uHasTexB == 1){
-    colB = texture2D(uTexB, wuv).rgb * 0.82 * uDarkenB;
+    colB = texture2D(uTexB, wuv).rgb * 0.82;
   } else {
-    colB = uVoidB;
+    colB = vec3(0.04, 0.02, 0.12);
   }
 
   float spec = max(0.0, w1 * 0.3 + w2 * 0.2 + 0.2);
@@ -497,8 +505,7 @@ void main(){
   col += sheen;
 
   vec2 vig = uv * 2.0 - 1.0;
-  vec3 voidMix = mix(uVoidB, uVoidA, clamp(uBlend, 0.0, 1.0));
-  col = mix(col, voidMix, clamp(dot(vig, vig) * 0.38, 0.0, 1.0));
+  col *= 1.0 - dot(vig, vig) * 0.38;
 
   float grain = fract(sin(dot(uv * 997.0, vec2(12.9898, 78.233))) * 43758.5453);
   col += grain * 0.018 - 0.009;
@@ -532,10 +539,6 @@ SLIDES.forEach((s,i)=>{
   });
 });
 
-function voidColorFor(idx){
-  return SLIDES[idx] && SLIDES[idx].light ? [0.93, 0.91, 0.87] : [0.04, 0.02, 0.12];
-}
-
 const uniforms = {
   uTime:           {value:0},
   uIndex:          {value:0},
@@ -545,10 +548,6 @@ const uniforms = {
   uTexB:           {value:placeholder},
   uHasTexA:        {value:0},
   uHasTexB:        {value:0},
-  uDarkenA:        {value: SLIDES[0].darken ?? 1.0},
-  uDarkenB:        {value: SLIDES[0].darken ?? 1.0},
-  uVoidA:          {value: voidColorFor(0)},
-  uVoidB:          {value: voidColorFor(0)},
   uWaterIntensity: {value:WATER_INTENSITY},
 };
 
@@ -602,10 +601,6 @@ function goTo(idx){
   const tA=textures[idx], tB=textures[prev];
   uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
   uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
-  uniforms.uDarkenB.value=SLIDES[prev].darken ?? 1.0;
-  uniforms.uDarkenA.value=SLIDES[idx].darken ?? 1.0;
-  uniforms.uVoidB.value=voidColorFor(prev);
-  uniforms.uVoidA.value=voidColorFor(idx);
   document.body.classList.toggle('light-slide', !!SLIDES[idx].light);
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
