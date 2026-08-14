@@ -177,6 +177,27 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 .numerator{display:block;font-size:clamp(9px,2vw,11px);letter-spacing:0.1em;color:var(--dimmer);padding:0 clamp(5px,1.5vw,8px) 8px;transition:color 0.3s;line-height:1;}
 #controller-parent li.is-current .numerator{color:var(--white);}
 
+/* ── LIGHT SLIDE OVERRIDES (Careers) ── */
+body.light-slide #title a,
+body.light-slide #screen-page-nav li a,
+body.light-slide .controller-item.is-symbol.is-current .numerator,
+body.light-slide #controller-parent li.is-current .numerator{
+  color:#1B1B1B;
+}
+body.light-slide #title-indicator,
+body.light-slide .separator{
+  background:#1B1B1B;
+}
+body.light-slide .numerator{
+  color:rgba(20,20,20,0.4);
+}
+body.light-slide #screen-page-nav li:not(.is-current) .slide-mobile-btn{
+  color:rgba(20,20,20,0.28) !important;
+}
+body.light-slide #screen-page-nav li.is-current .slide-mobile-btn{
+  color:rgba(20,20,20,0.9) !important;
+}
+
 /* ── CUSTOM CURSOR (trailing particles, canvas-based) ── */
 #trailing-cursor-canvas{position:fixed;top:0;left:0;pointer-events:none;z-index:900;}
 
@@ -389,7 +410,7 @@ const SLIDES = [
   { label:'Vindex',     img: ASSETS+'Vindex.jpg',       mobile_img: ASSETS+'Vindex%20Mobile.JPG',       darken: 1.0 },
   { label:'Alliance',   img: ASSETS+'Alliance.JPG',     mobile_img: ASSETS+'Alliance%20Mobile.JPG',     darken: 1.0 },
   { label:'Operations', img: ASSETS+'Operations.jpg',   mobile_img: ASSETS+'Operations%20Mobile.JPG',   darken: 1.0 },
-  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      darken: 0.45 },
+  { label:'Careers',    img: ASSETS+'Careers.JPG',      mobile_img: ASSETS+'Careers%20Mobile.JPG',      darken: 1.0, light: true },
 ];
 const TOTAL = SLIDES.length;
 
@@ -433,6 +454,8 @@ uniform int uHasTexB;
 uniform float uDarkenA;
 uniform float uDarkenB;
 uniform float uWaterIntensity;
+uniform vec3 uVoidA;
+uniform vec3 uVoidB;
 varying vec2 vUv;
 
 float wave(vec2 p, float freq, float phase){
@@ -458,13 +481,13 @@ void main(){
   if(uHasTexA == 1){
     colA = texture2D(uTexA, wuv).rgb * 0.82 * uDarkenA;
   } else {
-    colA = vec3(0.04, 0.02, 0.12);
+    colA = uVoidA;
   }
 
   if(uHasTexB == 1){
     colB = texture2D(uTexB, wuv).rgb * 0.82 * uDarkenB;
   } else {
-    colB = vec3(0.04, 0.02, 0.12);
+    colB = uVoidB;
   }
 
   float spec = max(0.0, w1 * 0.3 + w2 * 0.2 + 0.2);
@@ -474,7 +497,8 @@ void main(){
   col += sheen;
 
   vec2 vig = uv * 2.0 - 1.0;
-  col *= 1.0 - dot(vig, vig) * 0.38;
+  vec3 voidMix = mix(uVoidB, uVoidA, clamp(uBlend, 0.0, 1.0));
+  col = mix(col, voidMix, clamp(dot(vig, vig) * 0.38, 0.0, 1.0));
 
   float grain = fract(sin(dot(uv * 997.0, vec2(12.9898, 78.233))) * 43758.5453);
   col += grain * 0.018 - 0.009;
@@ -508,6 +532,10 @@ SLIDES.forEach((s,i)=>{
   });
 });
 
+function voidColorFor(idx){
+  return SLIDES[idx] && SLIDES[idx].light ? [0.93, 0.91, 0.87] : [0.04, 0.02, 0.12];
+}
+
 const uniforms = {
   uTime:           {value:0},
   uIndex:          {value:0},
@@ -519,6 +547,8 @@ const uniforms = {
   uHasTexB:        {value:0},
   uDarkenA:        {value: SLIDES[0].darken ?? 1.0},
   uDarkenB:        {value: SLIDES[0].darken ?? 1.0},
+  uVoidA:          {value: voidColorFor(0)},
+  uVoidB:          {value: voidColorFor(0)},
   uWaterIntensity: {value:WATER_INTENSITY},
 };
 
@@ -574,6 +604,9 @@ function goTo(idx){
   uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
   uniforms.uDarkenB.value=SLIDES[prev].darken ?? 1.0;
   uniforms.uDarkenA.value=SLIDES[idx].darken ?? 1.0;
+  uniforms.uVoidB.value=voidColorFor(prev);
+  uniforms.uVoidA.value=voidColorFor(idx);
+  document.body.classList.toggle('light-slide', !!SLIDES[idx].light);
   uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
