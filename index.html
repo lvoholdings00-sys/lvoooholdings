@@ -287,7 +287,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   <div id="about-text">
     <span class="about-lvo">LVO</span>
-    <a class="about-btn" href="https://about.wearelvo.com/">
+    <a class="about-btn" href="https://about.wearelvo.com/" id="about-exit-btn">
       About Us
     </a>
   </div>
@@ -347,6 +347,18 @@ if (isMobileDevice) {
   WATER_INTENSITY = 0.022;
 }
 
+/* ── Secret cross-page transition (Home <-> About) handoff ──
+   about.wearelvo.com is a different subdomain, so sessionStorage/
+   localStorage can't carry state between the two pages — a query
+   param does the handoff instead, and gets scrubbed from the address
+   bar immediately so it's invisible in normal use. */
+const ABOUT_URL = 'https://about.wearelvo.com/';
+const pageParams = new URLSearchParams(window.location.search);
+const arrivingFromAbout = pageParams.get('transition') === 'about';
+if (pageParams.get('transition')) {
+  history.replaceState(null, '', window.location.pathname);
+}
+
 const loadingScreen = document.getElementById('loading-screen');
 const siteWrap      = document.getElementById('site-wrap');
 function dismissLoader(){
@@ -355,7 +367,14 @@ function dismissLoader(){
   setTimeout(()=>{ loadingScreen.style.display='none'; }, 900);
   startAutoAdvance();
 }
-setTimeout(dismissLoader, 2400);
+
+if (arrivingFromAbout) {
+  // Skip the usual boot loader — we're mid-swipe, coming back from About.
+  loadingScreen.style.display = 'none';
+  siteWrap.classList.add('visible');
+} else {
+  setTimeout(dismissLoader, 2400);
+}
 
 const ASSETS = 'https://assets.wearelvo.com/';
 
@@ -556,6 +575,36 @@ function goTo(idx){
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
 
+/* ── Secret exit: swiping/scrolling "past" slide 0 leaves the site
+   entirely and hands off to about.wearelvo.com. It reuses the exact
+   same shader crossfade as goTo() — just dissolving into the void
+   instead of into another slide — so the two feel identical. */
+function exitToAbout(){
+  if(transitioning) return;
+  transitioning = true;
+  autoRunning = false;
+  const tB = textures[current];
+  uniforms.uTexB.value = tB || placeholder; uniforms.uHasTexB.value = tB ? 1 : 0;
+  uniforms.uTexA.value = placeholder; uniforms.uHasTexA.value = 0;
+  uniforms.uBlend.value = 0;
+  transitionStart = performance.now();
+  setTimeout(()=>{
+    window.location.href = ABOUT_URL + '?transition=home';
+  }, TRANS_DUR + 60);
+}
+function goToOrExit(idx){
+  if(idx < 0){ exitToAbout(); return; }
+  goTo(idx);
+}
+
+const aboutExitBtn = document.getElementById('about-exit-btn');
+if (aboutExitBtn) {
+  aboutExitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    exitToAbout();
+  });
+}
+
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
 let navDragMoved=false, navDragStartX=0;
@@ -572,14 +621,14 @@ navUl.addEventListener('click', e=>{
 
 window.addEventListener('keydown',e=>{
   if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
-  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goToOrExit(current-1);
 });
 
 let wCool=false;
 window.addEventListener('wheel',e=>{
   if(wCool)return; wCool=true;
   if(e.deltaX>30||e.deltaY>30) goTo(current+1);
-  else if(e.deltaX<-30||e.deltaY<-30) goTo(current-1);
+  else if(e.deltaX<-30||e.deltaY<-30) goToOrExit(current-1);
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
@@ -604,7 +653,7 @@ window.addEventListener('touchend', ()=>{
   if(!stageDragging) return;
   stageDragging=false;
   if(stageDelta < -50) goTo(current+1);
-  else if(stageDelta > 50) goTo(current-1);
+  else if(stageDelta > 50) goToOrExit(current-1);
   stageDelta=0;
 });
 
@@ -613,14 +662,14 @@ window.addEventListener('pointerup',()=>{
   if(!stageDragging) return;
   stageDragging=false;
   if(stageDelta<-50) goTo(current+1);
-  else if(stageDelta>50) goTo(current-1);
+  else if(stageDelta>50) goToOrExit(current-1);
   stageDelta=0;
 });
 
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 
 if(!isTouchDevice){
-  const CURSOR_PARTICLE_SRC = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADKADAAQAAAABAAAAEwAAAAAChpcNAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAABqElEQVQoFY3SPUvDQBgH8BREpRHExYiDgmLFl6WC+AYmWeyLg4i7buJX8DMpOujgyxGvUYeCgzhUQUSKKLUS0+ZyptXh8Z5Ti621ekPyJHl+uftfomhaf9Ei5JyxXKfynyEA6EYcLHpwyflT958GAQ7DTABNHd8EbtDbEH2BD5QEQmi2mM8P/Iq+A0SzszEg+3sPjDnDdVEtQKQbMUidHD3xVzf6A9UDEmEm+8h9KTqTVUjT+vB53aHrCbAPiceYq1dQI1Aqv4EhMll0jzv+Y0yiRgCnLRSYyDQHVoqUXe4uKL9l+L7GXC4vkMhE6eW/AOJs9k583ORDUyXMZ8F5SVHVVnllmPNKSFagAJ5DofaqGXw/gHBYg51dIldkmknY3tguv3jOtHR4+MqAzaraJXbEhqHhcQlwGSOi5pytVQHZLN5s0WNe8HPrLYlFsO20RPHkImxsbmHdLJFI76th7Z4SeuF53hTeFLvhRCJRCTKZKxgdnRDbW+iozFJbBMw14/ElwGYc0egMBMFzT21f5Rog33Z7dX02GBm7WV5ZfT5Nn5bE3zuCDe9UxdTpNvK+5AAAAABJRU5ErkJggg==';
+  const CURSOR_PARTICLE_SRC = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADKADAAQAAAABAAAAEwAAAAAChpcNAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAABqElEQVQoFY3SPUvDQBgH8BREpRHExYiDgmLFl6WC+AYmWeyLg4i7buJX8DMpOujgyxGvUYeCgzhUQUSKKLUS0+ZyptXh8Z5Ti621ekPyJHl+uftfomhaf9Ei5JyxXKfynyEA6EYcLHpwyflT958GAQ7DTABNHd8EbtDbEH2BD5QEQmi2mM8P/Iq+A0SzszEg+3sPjDnDdVEtQKQbMUidHD3xVzf6A9UDEmEm+8h9KTqTVUjT+vB53aHrCbAPiceYq1dQI1Aqv4EhMll0jzv+Y0yiRgCnLRSYyDQHVoqUXe4uKL9l+L7GXC4vkMhE6eW/AOJs9k583ORDUyXMZ8F5SVHVVnllmPNKSFagAJ5DofaqGXw/gHBYg51dIldkmknY3tguv3jOtHR4+MqAzaraJXbEhqHhcQlwGSOi5pytVQHZLN5s0WNe8HPrLYlFsO20RPHkImxsbmHdLJFI76th7Z4SeuF53hTeFLvhRCJRCTKZKxgdnRDbW+iozFJbBMw14/ElwGYc0egMBMFzT21f5Vog33Z7dX02GBm7WV5ZfT5Nn5bE3zuCDe9UxdTpNvK+5AAAAABJRU5ErkJggg==';
 
   const CURSOR_PARTICLE_COUNT = 15;
   const CURSOR_RATE = 0.4;
@@ -713,6 +762,32 @@ if(!isTouchDevice){
     const rx=tiltY*4, ry=-tiltX*4, tx=tiltX*10, ty=tiltY*6;
     stageEl.style.transform=`perspective(1200px) rotateX(${rx}deg) rotateY(${ry}deg) translate(${tx}px,${ty}px)`;
   })();
+}
+
+/* ── Reverse entrance: if we just arrived back from About via the
+   secret swipe, skip the boot loader and blend in from the void
+   into slide 0, mirroring exitToAbout() exactly. */
+if (arrivingFromAbout) {
+  startAutoAdvance();
+  const playEntrance = () => {
+    const tA = textures[0];
+    uniforms.uTexA.value = tA || placeholder;
+    uniforms.uHasTexA.value = tA ? 1 : 0;
+    uniforms.uTexB.value = placeholder;
+    uniforms.uHasTexB.value = 0;
+    uniforms.uBlend.value = 0;
+    transitionStart = performance.now();
+    transitioning = true;
+    setTimeout(()=>{ transitioning = false; }, TRANS_DUR + 100);
+  };
+  if (textures[0]) {
+    playEntrance();
+  } else {
+    const waitForTex = setInterval(()=>{
+      if (textures[0]) { clearInterval(waitForTex); playEntrance(); }
+    }, 40);
+    setTimeout(()=>clearInterval(waitForTex), 3000);
+  }
 }
 </script>
 </body>
