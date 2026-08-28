@@ -606,15 +606,15 @@ navUl.addEventListener('click', e=>{
 }, true);
 
 window.addEventListener('keydown',e=>{
-  if(e.key==='ArrowRight'||e.key==='ArrowDown'){ if(current===0) goToSecretAbout(); else goTo(current+1); }
-  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1);
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp'){ if(current===0) goToSecretAbout(); else goTo(current-1); }
 });
 
 let wCool=false;
 window.addEventListener('wheel',e=>{
   if(wCool)return; wCool=true;
-  if(e.deltaX>30||e.deltaY>30){ if(current===0) goToSecretAbout(); else goTo(current+1); }
-  else if(e.deltaX<-30||e.deltaY<-30) goTo(current-1);
+  if(e.deltaX>30||e.deltaY>30) goTo(current+1);
+  else if(e.deltaX<-30||e.deltaY<-30){ if(current===0) goToSecretAbout(); else goTo(current-1); }
   setTimeout(()=>wCool=false,900);
 },{passive:true});
 
@@ -638,8 +638,8 @@ window.addEventListener('touchmove', e=>{
 window.addEventListener('touchend', ()=>{
   if(!stageDragging) return;
   stageDragging=false;
-  if(stageDelta < -50){ if(current===0) goToSecretAbout(); else goTo(current+1); }
-  else if(stageDelta > 50) goTo(current-1);
+  if(stageDelta < -50) goTo(current+1);
+  else if(stageDelta > 50){ if(current===0) goToSecretAbout(); else goTo(current-1); }
   stageDelta=0;
 });
 
@@ -647,8 +647,8 @@ window.addEventListener('pointermove',e=>{ if(stageDragging && e.pointerType!=='
 window.addEventListener('pointerup',()=>{
   if(!stageDragging) return;
   stageDragging=false;
-  if(stageDelta<-50){ if(current===0) goToSecretAbout(); else goTo(current+1); }
-  else if(stageDelta>50) goTo(current-1);
+  if(stageDelta<-50) goTo(current+1);
+  else if(stageDelta>50){ if(current===0) goToSecretAbout(); else goTo(current-1); }
   stageDelta=0;
 });
 
