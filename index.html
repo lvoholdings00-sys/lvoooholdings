@@ -4,11 +4,23 @@
 <meta charset="UTF-8">
 <script>
 (function(){
-  var params = new URLSearchParams(window.location.search);
-  var consent = params.get('motion'); // 'accepted' | 'denied' | null
+  function getCookie(name){
+    var m = document.cookie.match(new RegExp('(?:^|; )'+name+'=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+  }
+  var consent = getCookie('lvo_motion_consent');
   window.__LVO_MOTION_CONSENT__ = consent;
-  if(consent !== 'accepted' && consent !== 'denied'){
-    location.replace('https://warning.wearelvo.com/?return=' + encodeURIComponent(location.href));
+
+  // The index page always sends visitors through the warning page first —
+  // it does not use the saved cookie to skip that gate. The cookie is only
+  // consulted below to decide whether images load once they're back here.
+  // "warned=1" is a one-time marker set only on the redirect back from
+  // warning.wearelvo.com, so that specific return trip isn't bounced again.
+  var justWarned = new URLSearchParams(location.search).get('warned') === '1';
+  if(!justWarned){
+    location.replace('https://warning.wearelvo.com/?return=' + encodeURIComponent(location.origin + location.pathname));
+  } else if(window.history && history.replaceState){
+    history.replaceState({}, '', location.pathname);
   }
 })();
 </script>
@@ -175,6 +187,11 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #legal-links a{font-family:'Cinzel',serif;font-size:clamp(7px,1vw,9px);letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;border-bottom:0.5px solid rgba(139,0,0,0.3);padding-bottom:2px;transition:color .3s,border-color .3s;}
 #legal-links a:hover{color:var(--white);border-color:var(--red-hi);}
 @media(max-width:600px){#legal-links{right:clamp(10px,3vw,20px);gap:0.8rem;}}
+
+#mode-toggle{position:fixed;top:0;right:0;z-index:35;padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);}
+#mode-toggle button{font-family:'Cinzel',serif;font-size:clamp(8px,1vw,11px);font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.75);background:rgba(0,0,0,0.28);border:0.5px solid rgba(255,255,255,0.35);padding:10px 18px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color .3s,color .3s,background .3s;}
+#mode-toggle button:hover{border-color:var(--purple);color:var(--white);background:rgba(127,119,221,0.12);}
+@media(max-width:600px){#mode-toggle button{padding:8px 12px;font-size:8px;}}
 #screen-controller .inner{position:relative;display:flex;align-items:flex-end;}
 #knob{position:absolute;bottom:0;left:0;display:flex;align-items:flex-end;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);pointer-events:none;z-index:2;}
 .separator{display:block;width:1px;height:16px;background:var(--white);position:relative;bottom:-1px;}
@@ -298,6 +315,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <span style="letter-spacing:0.3em;">Legion V. Omni-Operations</span>
       <span id="title-indicator"></span>
     </a>
+  </div>
+
+  <div id="mode-toggle">
+    <button id="mode-toggle-btn" type="button">Disable Images</button>
   </div>
 
   <div id="about-text">
@@ -498,14 +519,16 @@ const placeholder = makePlaceholder();
 const textures = new Array(TOTAL).fill(null);
 const loader = new THREE.TextureLoader();
 loader.crossOrigin = 'anonymous';
+let secretTexture = null;
 
-// Motion sickness gate: if the visitor declined on warning.wearelvo.com,
-// skip every image load entirely — the water shader still runs, but always
-// falls back to its plain placeholder color since textures stay empty.
-const IMAGES_ALLOWED = window.__LVO_MOTION_CONSENT__ !== 'denied';
+// Motion sickness gate: starts from the cookie set on warning.wearelvo.com,
+// but can also be flipped live via the mode-toggle button (top right) —
+// no page reload needed either way.
+let imagesAllowed = window.__LVO_MOTION_CONSENT__ !== 'denied';
 
-if(IMAGES_ALLOWED){
+function loadAllImages(){
   SLIDES.forEach((s,i)=>{
+    if(textures[i]) return;
     const imgUrl = getImageUrl(s.img, s.mobile_img);
     if(!imgUrl) return;
     loader.load(imgUrl, tex=>{
@@ -518,15 +541,20 @@ if(IMAGES_ALLOWED){
       }
     });
   });
+  if(!secretTexture){
+    loader.load(getImageUrl(SECRET_SLIDE.img, SECRET_SLIDE.mobile_img), tex=>{
+      tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+      tex.minFilter=THREE.LinearFilter;
+      secretTexture = tex;
+    });
+  }
 }
 
-let secretTexture = null;
-if(IMAGES_ALLOWED){
-  loader.load(getImageUrl(SECRET_SLIDE.img, SECRET_SLIDE.mobile_img), tex=>{
-    tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-    tex.minFilter=THREE.LinearFilter;
-    secretTexture = tex;
-  });
+function clearAllImages(){
+  for(let i=0;i<textures.length;i++) textures[i]=null;
+  secretTexture = null;
+  uniforms.uTexA.value = placeholder; uniforms.uHasTexA.value = 0;
+  uniforms.uTexB.value = placeholder; uniforms.uHasTexB.value = 0;
 }
 
 const uniforms = {
@@ -542,6 +570,8 @@ const uniforms = {
 };
 
 scene.add(new THREE.Mesh(geo, new THREE.ShaderMaterial({vertexShader:vertSrc,fragmentShader:fragSrc,uniforms})));
+
+if(imagesAllowed) loadAllImages();
 
 function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
@@ -620,6 +650,20 @@ document.getElementById('about-btn').addEventListener('click', e=>{
   goToSecretAbout();
 });
 
+const modeToggleBtn = document.getElementById('mode-toggle-btn');
+function updateModeToggleLabel(){
+  modeToggleBtn.textContent = imagesAllowed ? 'Disable Images' : 'Enable Images';
+}
+function setImagesAllowed(allowed){
+  imagesAllowed = allowed;
+  document.cookie = 'lvo_motion_consent=' + (allowed?'accepted':'denied') + '; domain=.wearelvo.com; path=/; max-age=' + (60*60*24*365) + '; SameSite=Lax';
+  window.__LVO_MOTION_CONSENT__ = allowed ? 'accepted' : 'denied';
+  updateModeToggleLabel();
+  if(allowed) loadAllImages(); else clearAllImages();
+}
+updateModeToggleLabel();
+modeToggleBtn.addEventListener('click', ()=> setImagesAllowed(!imagesAllowed));
+
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
 let navDragMoved=false, navDragStartX=0;
@@ -684,7 +728,7 @@ window.addEventListener('pointerup',()=>{
 const isTouchDevice = window.matchMedia('(pointer:coarse)').matches;
 
 if(!isTouchDevice){
-  const CURSOR_PARTICLE_SRC = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADKADAAQAAAABAAAAEwAAAAAChpcNAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAABqElEQVQoFY3SPUvDQBgH8BREpRHExYiDgmLFl6WC+AYmWeyLg4i7buJX8DMpOujgyxGvUYeCgzhUQUSKKLUS0+ZyptXh8Z5Ti621ekPyJHl+uftfomhaf9Ei5JyxXKfynyEA6EYcLHpwyflT958GAQ7DTABNHd8EbtDbEH2BD5QEQmi2mM8P/Iq+A0SzszEg+3sPjDnDdVEtQKQbMUidHD3xVzf6A9UDEmEm+8h9KTqTVUjT+vB53aHrCbAPiceYq1dQI1Aqv4EhMll0jzv+Y0yiRgCnLRSYyDQHVoqUXe4uKL9l+L7GXC4vkMhE6eW/AOJs9k583ORDUyXMZ8F5SVHVVnllmPNKSFagAJ5DofaqGXw/gHBYg51dIldkmknY3tguv3jOtHR4+MqAzaraJXbEhqHhcQlwGSOi5pytVQHZLN5s0WNe8HPrLYlFsO20RPHkImxsbmHdLJFI76th7Z4SeuF53hTeFLvhRCJRCTKZKxgdnRDbW+iozFJbBMw14/ElwGYc0egMBMFzT21f5Vog33Z7dX02GBm7WV5ZfT5Nn5bE3zuCDe9UxdTpNvK+5AAAAABJRU5ErkJggg==';
+  const CURSOR_PARTICLE_SRC = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAATCAYAAACk9eypAAAAAXNSR0IArs4c6QAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAhGVYSWZNTQAqAAAACAAFARIAAwAAAAEAAQAAARoABQAAAAEAAABKARsABQAAAAEAAABSASgAAwAAAAEAAgAAh2kABAAAAAEAAABaAAAAAAAAAEgAAAABAAAASAAAAAEAA6ABAAMAAAABAAEAAKACAAQAAAABAAAADKADAAQAAAABAAAAEwAAAAAChpcNAAAACXBIWXMAAAsTAAALEwEAmpwYAAABWWlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyI+CiAgICAgICAgIDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2NyaXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgpMwidZAAABqElEQVQoFY3SPUvDQBgH8BREpRHExYiDgmLFl6WC+AYmWeyLg4i7buJX8DMpOujgyxGvUYeCgzhUQUSKKLUS0+ZyptXh8Z5Ti621ekPyJHl+uftfomhaf9Ei5JyxXKfynyEA6EYcLHpwyflT958GAQ7DTABNHd8EbtDbEH2BD5QEQmi2mM8P/Iq+A0SzszEg+3sPjDnDdVEtQKQbMUidHD3xVzf6A9UDEmEm+8h9KTqTVUjT+vB53aHrCbAPiceYq1dQI1Aqv4EhMll0jzv+Y0yiRgCnLRSYyDQHVoqUXe4uKL9l+L7GXC4vkMhE6eW/AOJs9k583ORDUyXMZ8F5SVHVVnllmPNKSFagAJ5DofaqGXw/gHBYg51dIldkmknY3tguv3jOtHR4+MqAzaraJXbEhqHhcQlwGSOi5pytVQHZLN5s0WNe8HPrLYlFsO20RPHkImxsbmHdLJFI76th7Z4SeuF53hTeFLvhRCJRCTKZKxgdnRDbW+iozFJbBMw14/ElwGYc0egMBMFzT21f5Rog33Z7dX02GBm7WV5ZfT5Nn5bE3zuCDe9UxdTpNvK+5AAAAABJRU5ErkJggg==';
 
   const CURSOR_PARTICLE_COUNT = 15;
   const CURSOR_RATE = 0.4;
