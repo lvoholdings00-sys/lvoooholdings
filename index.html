@@ -11,11 +11,6 @@
   var consent = getCookie('lvo_motion_consent');
   window.__LVO_MOTION_CONSENT__ = consent;
 
-  // The index page always sends visitors through the warning page first —
-  // it does not use the saved cookie to skip that gate. The cookie is only
-  // consulted below to decide whether images load once they're back here.
-  // "warned=1" is a one-time marker set only on the redirect back from
-  // warning.wearelvo.com, so that specific return trip isn't bounced again.
   var justWarned = new URLSearchParams(location.search).get('warned') === '1';
   if(!justWarned){
     location.replace('https://warning.wearelvo.com/?return=' + encodeURIComponent(location.origin + location.pathname));
@@ -186,7 +181,10 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #legal-links{position:fixed;bottom:clamp(12px,3vw,20px);right:clamp(16px,4vw,40px);z-index:30;display:flex;gap:1.2rem;pointer-events:all;}
 #legal-links a{font-family:'Cinzel',serif;font-size:clamp(7px,1vw,9px);letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,0.35);text-decoration:none;border-bottom:0.5px solid rgba(139,0,0,0.3);padding-bottom:2px;transition:color .3s,border-color .3s;}
 #legal-links a:hover{color:var(--white);border-color:var(--red-hi);}
-@media(max-width:600px){#legal-links{right:clamp(10px,3vw,20px);gap:0.8rem;}}
+@media(max-width:768px){
+  #legal-links{left:50%;right:auto;transform:translateX(-50%);bottom:64px;gap:1rem;}
+}
+@media(max-width:600px){#legal-links{gap:0.7rem;}#legal-links a{font-size:7px;}}
 
 #mode-toggle{position:fixed;top:0;right:0;z-index:35;padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);}
 #mode-toggle button{font-family:'Cinzel',serif;font-size:clamp(8px,1vw,11px);font-weight:600;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,0.75);background:rgba(0,0,0,0.28);border:0.5px solid rgba(255,255,255,0.35);padding:10px 18px;cursor:pointer;backdrop-filter:blur(6px);transition:border-color .3s,color .3s,background .3s;}
@@ -414,10 +412,6 @@ const SLIDES = [
 ];
 const TOTAL = SLIDES.length;
 
-// The "secret" photo — reached only by swiping/clicking forward from About.
-// It plays the same water-shader blend as every other slide transition,
-// then hands off to about.wearelvo.com so the destination page can pick
-// up on the exact same image and continue the carousel there.
 const SECRET_SLIDE = { img: ASSETS+'LVOAL.jpg', mobile_img: ASSETS+'LVOAP.JPG' };
 const SECRET_URL = 'https://about.wearelvo.com/';
 
@@ -521,9 +515,6 @@ const loader = new THREE.TextureLoader();
 loader.crossOrigin = 'anonymous';
 let secretTexture = null;
 
-// Motion sickness gate: starts from the cookie set on warning.wearelvo.com,
-// but can also be flipped live via the mode-toggle button (top right) —
-// no page reload needed either way.
 let imagesAllowed = window.__LVO_MOTION_CONSENT__ !== 'denied';
 
 function loadAllImages(){
@@ -629,9 +620,6 @@ function goTo(idx){
   setTimeout(()=>transitioning=false, TRANS_DUR+100);
 }
 
-// Secret transition: only reachable by moving forward from the About slide.
-// Blends into the secret photo using the exact same shader as every other
-// slide change, then hands off to about.wearelvo.com once the blend lands.
 function goToSecretAbout(){
   if(transitioning || current!==0) return;
   transitioning=true;
