@@ -19,10 +19,18 @@
   }
 })();
 </script>
-<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=0">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
 <title>LVO Holdings | Legion V. Omni-Operations</title>
 <meta name="description" content="LVO Holdings — a private multi-division operations group spanning Vindex, Alliance, and Operations. Explore Legion V. Omni-Operations.">
-<link rel="icon" type="image/png" href="assets/logo.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://assets.wearelvo.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600;900&family=Cormorant+SC:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -48,23 +56,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #stage{position:fixed;inset:-3%;z-index:0;background:transparent;will-change:transform;}
 #stage canvas{width:100%!important;height:100%!important;display:block;}
 
-#lvo-logo-overlay{
-  position:fixed;inset:0;z-index:20;
-  display:flex;align-items:center;justify-content:center;
-  pointer-events:none;
-  transition:opacity 0.7s ease;
-}
-#lvo-logo-overlay img{
-  width:clamp(180px,28vw,380px);
-  height:auto;
-  filter:drop-shadow(0 0 30px rgba(139,0,0,0.6)) drop-shadow(0 0 8px rgba(0,0,0,0.9));
-  animation:logoFloat 5s ease-in-out infinite;
-}
-@keyframes logoFloat{
-  0%,100%{transform:translateY(0px);}
-  50%{transform:translateY(-10px);}
-}
-#lvo-logo-overlay.hidden{opacity:0;}
 
 #title{position:fixed;top:0;left:0;right:0;z-index:30;padding:clamp(14px,3vw,28px) clamp(16px,4vw,40px);}
 #title a{text-decoration:none;color:var(--white);font-size:clamp(9px,2vw,13px);letter-spacing:0.3em;display:inline-flex;align-items:center;position:relative;}
@@ -74,29 +65,18 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #stage-nav{position:fixed;top:50%;left:0;right:0;z-index:30;transform:translateY(-50%);overflow:hidden;pointer-events:none;}
 #screen-page-nav{display:flex;list-style:none;transition:transform 0.8s cubic-bezier(0.77,0,0.175,1);will-change:transform;}
 #screen-page-nav li{flex-shrink:0;display:flex;align-items:center;justify-content:center;pointer-events:all;}
-#screen-page-nav li a{text-decoration:none;color:var(--white);font-size:clamp(22px,5vw,68px);letter-spacing:0.02em;line-height:1;display:block;padding:0 clamp(8px,2vw,20px);white-space:nowrap;font-family:'IM Fell English',Georgia,serif;font-style:italic;}
+#screen-page-nav li a{text-decoration:none;color:var(--white);font-size:clamp(22px,3.8vw,54px);letter-spacing:0.14em;text-transform:uppercase;font-weight:600;line-height:1;display:block;padding:0 clamp(8px,2vw,20px);white-space:nowrap;font-family:'Cinzel',Georgia,serif;text-shadow:0 2px 24px rgba(0,0,0,.9),0 0 6px rgba(0,0,0,.6);}
 
 #screen-page-nav li a {
   transition: opacity 0.4s ease, filter 0.55s ease;
 }
 #screen-page-nav li:not(.is-current) a {
-  filter: blur(4px);
-  opacity: 0.25;
+  filter: blur(1.5px);
+  opacity: 0.55;
 }
 #screen-page-nav li.is-current a {
   filter: blur(0px);
   opacity: 1;
-}
-.slide-mobile-btn {
-  transition: filter 0.55s ease, color 0.4s ease !important;
-}
-#screen-page-nav li:not(.is-current) .slide-mobile-btn {
-  filter: blur(4px);
-  color: rgba(255,255,255,0.22) !important;
-}
-#screen-page-nav li.is-current .slide-mobile-btn {
-  filter: blur(0px);
-  color: rgba(255,255,255,1) !important;
 }
 
 @media(max-width:768px){
@@ -116,38 +96,6 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   #about-text.visible{ transform:translateY(-50%); }
   #about-text .about-lvo{ font-size:clamp(48px,12vw,72px); }
 
-  #screen-page-nav li.has-mobile-btn{
-    flex-direction:column;
-    gap:16px;
-    align-items:center;
-    justify-content:center;
-  }
-
-  #screen-page-nav li.has-mobile-btn > a:first-of-type{
-    display:none;
-  }
-
-  .slide-mobile-btn{
-    display:inline-flex;
-    align-items:center;
-    gap:14px;
-    text-decoration:none;
-    border:none;
-    outline:none;
-    padding:10px 0;
-    font-family:'Cinzel',serif;
-    font-size:clamp(22px,5vw,68px);
-    font-weight:400;
-    letter-spacing:.02em;
-    color:rgba(255,255,255,0.3);
-    font-family:'IM Fell English',Georgia,serif;
-    font-style:italic;
-    text-transform:none;
-    background:none;
-    white-space:nowrap;
-    pointer-events:all;
-  }
-  li.is-current .slide-mobile-btn{ color:rgba(255,255,255,1); }
 
   #screen-page-nav li[data-idx="2"],
   #screen-page-nav li[data-idx="3"],
@@ -163,14 +111,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
   #screen-page-nav li[data-idx="0"]{ pointer-events:none; }
 }
 
-@media(min-width:769px){
-  .slide-mobile-btn{ display:none !important; }
-}
 
-#screen-page-nav li.lvo-about{display:flex;align-items:center;justify-content:center;}
-#screen-page-nav li.lvo-about .about-inner{text-align:center;opacity:0.85;}
-#screen-page-nav li.lvo-about .about-inner .lvo-big{font-family:'IM Fell English',Georgia,serif;font-style:italic;font-size:clamp(36px,7vw,96px);color:var(--white);letter-spacing:0.08em;line-height:1;display:block;}
-#screen-page-nav li.lvo-about .about-inner .lvo-sub{font-size:clamp(7px,1.5vw,11px);letter-spacing:0.4em;color:var(--dimmer);display:block;margin-top:10px;}
 
 .controller-item.is-symbol .numerator{font-size:clamp(11px,2vw,15px);letter-spacing:0;padding-bottom:6px;}
 .controller-item.is-symbol.is-current .numerator{color:var(--white);}
@@ -292,6 +233,91 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 #stage.video-mode canvas{
   opacity:0;
 }
+
+/* ---------- mobile polish ---------- */
+@supports(height:100dvh){ html,body{height:100dvh;} }
+#title{padding-top:calc(clamp(14px,3vw,28px) + env(safe-area-inset-top,0px));}
+#screen-controller{padding-bottom:calc(clamp(12px,3vw,20px) + env(safe-area-inset-bottom,0px));}
+#controller-parent li{position:relative;}
+@media(pointer:coarse){ #controller-parent li::after{content:'';position:absolute;inset:-14px -3px -10px;} }
+@media(max-width:768px){
+  #legal-links{bottom:calc(64px + env(safe-area-inset-bottom,0px));}
+  #legal-links a{font-size:9px;padding:8px 0;white-space:nowrap;}
+}
+
+/* ---------- top-right logo + menu ---------- */
+#top-right{
+  position:fixed;z-index:60;display:flex;align-items:center;gap:2px;
+  top:calc(env(safe-area-inset-top,0px) + clamp(6px,1.6vw,18px));
+  right:clamp(6px,2.4vw,28px);
+}
+#top-logo{display:flex;align-items:center;justify-content:center;width:48px;height:48px;-webkit-tap-highlight-color:transparent;}
+#top-logo img{width:34px;height:34px;display:block;filter:drop-shadow(0 0 8px rgba(0,0,0,.8));}
+#menu-btn{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+  width:48px;height:48px;background:none;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent;
+}
+#menu-btn span{display:block;width:24px;height:1.5px;background:#fff;box-shadow:0 0 6px rgba(0,0,0,.7);transition:transform .35s ease,opacity .25s ease;}
+#menu-btn.open span:nth-child(1){transform:translateY(7.5px) rotate(45deg);}
+#menu-btn.open span:nth-child(2){opacity:0;}
+#menu-btn.open span:nth-child(3){transform:translateY(-7.5px) rotate(-45deg);}
+#menu-btn:focus-visible,#top-logo:focus-visible{outline:1px solid var(--purple);outline-offset:-4px;}
+
+#site-menu{
+  position:fixed;inset:0;z-index:50;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.4rem;
+  padding:calc(env(safe-area-inset-top,0px) + 64px) 24px calc(env(safe-area-inset-bottom,0px) + 24px);
+  background:rgba(0,0,0,.95);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+  overflow-y:auto;opacity:0;visibility:hidden;
+  transition:opacity .4s ease,visibility 0s linear .4s;
+}
+#site-menu.open{opacity:1;visibility:visible;transition:opacity .4s ease,visibility 0s;}
+#site-menu ul{list-style:none;display:flex;flex-direction:column;align-items:center;gap:.2rem;}
+#site-menu li a{
+  display:block;padding:12px 28px;color:#fff;text-decoration:none;text-align:center;
+  font-family:'Cinzel','Cambria Math','Segoe UI Symbol',Georgia,serif;font-weight:600;
+  font-size:clamp(20px,5.5vw,30px);letter-spacing:.16em;text-transform:uppercase;line-height:1.2;
+  transition:color .25s;
+}
+#site-menu li a:hover,#site-menu li a:active,#site-menu li a:focus-visible{color:var(--purple);outline:none;}
+#site-menu li:first-child{margin-bottom:.9rem;padding-bottom:.9rem;border-bottom:.5px solid rgba(127,119,221,.35);}
+#site-menu li:first-child a{font-size:clamp(24px,6.5vw,36px);letter-spacing:.12em;}
+#menu-mode-btn{
+  font-family:'Cinzel',serif;font-size:10px;font-weight:600;letter-spacing:.3em;text-transform:uppercase;
+  color:rgba(255,255,255,.8);background:rgba(0,0,0,.28);border:.5px solid rgba(255,255,255,.35);
+  padding:12px 20px;min-height:44px;cursor:pointer;transition:border-color .3s,color .3s;
+}
+#menu-mode-btn:hover{border-color:var(--purple);color:#fff;}
+#site-menu .menu-legal{display:flex;gap:1.4rem;}
+#site-menu .menu-legal a{
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);text-decoration:none;padding:8px 0;
+}
+#site-menu .menu-legal a:hover{color:#fff;}
+
+/* ---------- menu + logo: mobile only ---------- */
+@media(min-width:769px){ #top-right,#site-menu{display:none !important;} }
+@media(max-width:768px){
+  #mode-toggle{display:none;}
+  #screen-page-nav li a{font-size:clamp(22px,6vw,34px);}
+}
+
+/* ---------- desktop top nav ---------- */
+#top-nav{display:none;}
+@media(min-width:1100px){
+  #top-nav{
+    display:flex;position:fixed;z-index:31;left:50%;transform:translateX(-50%);
+    top:calc(clamp(14px,3vw,28px) + env(safe-area-inset-top,0px) - 2px);
+    gap:clamp(40px,6vw,110px);
+  }
+  #top-nav a{
+    font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.32em;text-transform:uppercase;
+    color:rgba(255,255,255,.78);text-decoration:none;padding:6px 0 5px 0.32em;
+    border-bottom:.5px solid rgba(139,0,0,.35);text-shadow:0 2px 14px rgba(0,0,0,.9);
+    transition:color .3s,border-color .3s;
+  }
+  #top-nav a:hover,#top-nav a:focus-visible{color:#fff;border-color:var(--red-hi);outline:none;}
+}
 </style>
 </head>
 <body>
@@ -306,7 +332,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 <div id="site-wrap">
 
   <div id="stage"><canvas></canvas></div>
-  <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" autoplay loop muted playsinline preload="auto"></video>
+  <video id="video-bg" src="https://assets.wearelvo.com/LVO.mp4" loop muted playsinline preload="none"></video>
 
   <div id="title">
     <a href="https://wearelvo.com/" id="title-link">
@@ -314,6 +340,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <span id="title-indicator"></span>
     </a>
   </div>
+
+  <nav id="top-nav" aria-label="Divisions">
+    <a href="https://vindex.wearelvo.com/">Vindex</a>
+    <a href="https://alliance.wearelvo.com/">Alliance</a>
+    <a href="https://operations.wearelvo.com/">Operations</a>
+  </nav>
 
   <div id="mode-toggle">
     <button id="mode-toggle-btn" type="button">Disable Images</button>
@@ -328,26 +360,12 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
 
   <div id="stage-nav">
     <ul id="screen-page-nav">
-      <li class="about-slide" data-idx="0" data-href="">
-        <div class="about-inner" style="text-align:center;opacity:0.85;"></div>
-      </li>
+      <li class="about-slide" data-idx="0" data-href=""></li>
       <li data-idx="1" data-href="https://contact.wearelvo.com/"><a href="https://contact.wearelvo.com/">Connect</a></li>
-      <li data-idx="2" data-href="https://vindex.wearelvo.com/" class="has-mobile-btn">
-        <a href="https://vindex.wearelvo.com/">Vindex</a>
-        <a class="slide-mobile-btn" href="https://vindex.wearelvo.com/">Vindex</a>
-      </li>
-      <li data-idx="3" data-href="https://alliance.wearelvo.com/" class="has-mobile-btn">
-        <a href="https://alliance.wearelvo.com/">Alliance</a>
-        <a class="slide-mobile-btn" href="https://alliance.wearelvo.com/">Alliance</a>
-      </li>
-      <li data-idx="4" data-href="https://operations.wearelvo.com/" class="has-mobile-btn">
-        <a href="https://operations.wearelvo.com/">Operations</a>
-        <a class="slide-mobile-btn" href="https://operations.wearelvo.com/">Operations</a>
-      </li>
-      <li data-idx="5" data-href="https://wearelvo.com/careers/" class="has-mobile-btn">
-        <a href="https://wearelvo.com/careers/">Careers</a>
-        <a class="slide-mobile-btn" href="https://wearelvo.com/careers/">Careers</a>
-      </li>
+      <li data-idx="2" data-href="https://vindex.wearelvo.com/"><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <li data-idx="3" data-href="https://alliance.wearelvo.com/"><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <li data-idx="4" data-href="https://operations.wearelvo.com/"><a href="https://operations.wearelvo.com/">Operations</a></li>
+      <li data-idx="5" data-href="https://wearelvo.com/careers/"><a href="https://wearelvo.com/careers/">Careers</a></li>
     </ul>
   </div>
 
@@ -356,7 +374,7 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
       <div id="knob">
         <span class="separator"></span>
       </div>
-      <ul class="nav-group" id="controller-parent">
+      <ul id="controller-parent">
         <li class="nav-list controller-item is-symbol is-current" data-idx="0"><span class="numerator">♱ᛪ༙</span></li>
         <li class="nav-list controller-item" data-idx="1"><span class="numerator">1</span></li>
         <li class="nav-list controller-item" data-idx="2"><span class="numerator">2</span></li>
@@ -371,6 +389,24 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:'Ti
     <a href="https://privacy.wearelvo.com">Privacy Policy</a>
     <a href="https://tos.wearelvo.com">Terms of Service</a>
   </div>
+
+  <div id="top-right">
+    <a id="top-logo" href="https://wearelvo.com/" aria-label="LVO Holdings home"><img src="/assets/logo-small.png" alt="" width="34" height="34"></a>
+    <button id="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="site-menu"><span></span><span></span><span></span></button>
+  </div>
+  <nav id="site-menu" aria-label="Main menu">
+    <ul>
+      <li><a href="https://wearelvo.com/" aria-label="LVO-O home">𝐋𝐕𝐎-𝐎</a></li>
+      <li><a href="https://vindex.wearelvo.com/">Vindex</a></li>
+      <li><a href="https://alliance.wearelvo.com/">Alliance</a></li>
+      <li><a href="https://operations.wearelvo.com/">Operations</a></li>
+    </ul>
+    <button id="menu-mode-btn" type="button">Disable Images</button>
+    <div class="menu-legal">
+      <a href="https://privacy.wearelvo.com">Privacy</a>
+      <a href="https://tos.wearelvo.com">Terms</a>
+    </div>
+  </nav>
 
 </div>
 
@@ -423,16 +459,18 @@ function updateVideoBackground(idx){
   if(VIDEO_SLIDES.has(idx)){
     videoBg.classList.add('visible');
     stageCanvas.classList.add('video-mode');
+    videoBg.play().catch(()=>{});
   } else {
     videoBg.classList.remove('visible');
     stageCanvas.classList.remove('video-mode');
+    videoBg.pause();
   }
 }
 updateVideoBackground(0);
 
 const canvas = document.querySelector('#stage canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias:false, alpha:false });
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobileDevice ? 1.5 : 2));
 const scene  = new THREE.Scene();
 const camera = new THREE.OrthographicCamera(-1,1,1,-1,0,1);
 const geo    = new THREE.PlaneGeometry(2,2);
@@ -445,9 +483,7 @@ void main(){ vUv=uv; gl_Position=vec4(position,1.0); }
 const fragSrc = `
 precision highp float;
 uniform float uTime;
-uniform float uIndex;
 uniform float uBlend;
-uniform float uPrev;
 uniform sampler2D uTexA;
 uniform sampler2D uTexB;
 uniform int uHasTexA;
@@ -517,28 +553,35 @@ let secretTexture = null;
 
 let imagesAllowed = window.__LVO_MOTION_CONSENT__ !== 'denied';
 
-function loadAllImages(){
-  SLIDES.forEach((s,i)=>{
-    if(textures[i]) return;
-    const imgUrl = getImageUrl(s.img, s.mobile_img);
-    if(!imgUrl) return;
-    loader.load(imgUrl, tex=>{
-      tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-      tex.minFilter=THREE.LinearFilter;
-      textures[i]=tex;
-      if(i===current){
-        uniforms.uTexA.value=tex;
-        uniforms.uHasTexA.value=1;
-      }
-    });
+function loadTex(url, onLoad){
+  loader.load(url, tex=>{
+    tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
+    tex.minFilter=THREE.LinearFilter;
+    onLoad(tex);
   });
-  if(!secretTexture){
-    loader.load(getImageUrl(SECRET_SLIDE.img, SECRET_SLIDE.mobile_img), tex=>{
-      tex.wrapS=tex.wrapT=THREE.ClampToEdgeWrapping;
-      tex.minFilter=THREE.LinearFilter;
-      secretTexture = tex;
-    });
-  }
+}
+
+function loadSlide(i){
+  if(textures[i] || !imagesAllowed) return;
+  loadTex(getImageUrl(SLIDES[i].img, SLIDES[i].mobile_img), tex=>{
+    textures[i]=tex;
+    if(i===current){
+      uniforms.uTexA.value=tex;
+      uniforms.uHasTexA.value=1;
+    }
+  });
+}
+
+function loadAllImages(){
+  loadSlide(0);
+  const rest = ()=>{
+    for(let i=1;i<TOTAL;i++) loadSlide(i);
+    if(!secretTexture && imagesAllowed){
+      loadTex(getImageUrl(SECRET_SLIDE.img, SECRET_SLIDE.mobile_img), tex=>{ secretTexture = tex; });
+    }
+  };
+  if('requestIdleCallback' in window) requestIdleCallback(rest,{timeout:3000});
+  else setTimeout(rest,1500);
 }
 
 function clearAllImages(){
@@ -550,8 +593,6 @@ function clearAllImages(){
 
 const uniforms = {
   uTime:           {value:0},
-  uIndex:          {value:0},
-  uPrev:           {value:0},
   uBlend:          {value:1},
   uTexA:           {value:placeholder},
   uTexB:           {value:placeholder},
@@ -568,7 +609,21 @@ function resize(){ renderer.setSize(window.innerWidth, window.innerHeight); }
 resize();
 window.addEventListener('resize', resize);
 
-let current=0, transitioning=false, transitionStart=0;
+let current=0, transitioning=false, transitionStart=0, menuOpen=false;
+const menuBtn = document.getElementById('menu-btn');
+const mobileMenu = document.getElementById('site-menu');
+function setMenu(open){
+  menuOpen = open;
+  menuBtn.classList.toggle('open', open);
+  mobileMenu.classList.toggle('open', open);
+  menuBtn.setAttribute('aria-expanded', String(open));
+  menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  if(open) mobileMenu.querySelector('a').focus({preventScroll:true});
+}
+menuBtn.addEventListener('click', ()=> setMenu(!menuOpen));
+mobileMenu.addEventListener('click', e=>{ if(e.target.closest('a')) setMenu(false); });
+window.addEventListener('keydown', e=>{ if(e.key==='Escape' && menuOpen){ setMenu(false); menuBtn.focus(); } });
+
 const TRANS_DUR=900;
 const navUl=document.getElementById('screen-page-nav');
 const ctrlUl=document.getElementById('controller-parent');
@@ -595,10 +650,7 @@ function updateNav(idx){
   const sw = parseFloat(navUl.dataset.sw) || window.innerWidth * 0.5;
   navUl.style.transform=`translateX(${-(sw*idx-(window.innerWidth/2-sw/2))}px)`;
   Array.from(navUl.children).forEach((li,i)=>{
-    li.classList.remove('is-current','is-prev','is-next');
-    if(i===idx) li.classList.add('is-current');
-    else if(i===idx-1) li.classList.add('is-prev');
-    else if(i===idx+1) li.classList.add('is-next');
+    li.classList.toggle('is-current',i===idx);
   });
   Array.from(ctrlUl.children).forEach((li,i)=>li.classList.toggle('is-current',i===idx));
   knob.style.transform=`translateX(${idx*(ctrlUl.offsetWidth/TOTAL)}px)`;
@@ -606,13 +658,14 @@ function updateNav(idx){
 updateNav(0);
 
 function goTo(idx){
-  if(idx<0||idx>=TOTAL||transitioning||idx===current) return;
+  if(menuOpen||idx<0||idx>=TOTAL||transitioning||idx===current) return;
+  loadSlide(idx);
   transitioning=true;
   const prev=current; current=idx;
   const tA=textures[idx], tB=textures[prev];
   uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
   uniforms.uTexA.value=tA||placeholder; uniforms.uHasTexA.value=tA?1:0;
-  uniforms.uPrev.value=prev; uniforms.uIndex.value=idx; uniforms.uBlend.value=0;
+  uniforms.uBlend.value=0;
   transitionStart=performance.now();
   updateNav(idx); resetProgress();
   updateVideoBackground(idx);
@@ -621,7 +674,7 @@ function goTo(idx){
 }
 
 function goToSecretAbout(){
-  if(transitioning || current!==0) return;
+  if(menuOpen || transitioning || current!==0) return;
   transitioning=true;
   const tB=textures[0];
   uniforms.uTexB.value=tB||placeholder; uniforms.uHasTexB.value=tB?1:0;
@@ -639,8 +692,11 @@ document.getElementById('about-btn').addEventListener('click', e=>{
 });
 
 const modeToggleBtn = document.getElementById('mode-toggle-btn');
+const menuModeBtn = document.getElementById('menu-mode-btn');
 function updateModeToggleLabel(){
-  modeToggleBtn.textContent = imagesAllowed ? 'Disable Images' : 'Enable Images';
+  const label = imagesAllowed ? 'Disable Images' : 'Enable Images';
+  modeToggleBtn.textContent = label;
+  menuModeBtn.textContent = label;
 }
 function setImagesAllowed(allowed){
   imagesAllowed = allowed;
@@ -651,6 +707,7 @@ function setImagesAllowed(allowed){
 }
 updateModeToggleLabel();
 modeToggleBtn.addEventListener('click', ()=> setImagesAllowed(!imagesAllowed));
+menuModeBtn.addEventListener('click', ()=> setImagesAllowed(!imagesAllowed));
 
 Array.from(ctrlUl.children).forEach(li=>li.addEventListener('click',()=>goTo(+li.dataset.idx)));
 
